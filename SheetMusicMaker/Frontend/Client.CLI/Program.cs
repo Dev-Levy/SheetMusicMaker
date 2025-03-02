@@ -1,4 +1,5 @@
 ﻿using Models;
+using PdfGenerationService;
 using Repository;
 using Repository.ModelRepos;
 
@@ -20,6 +21,8 @@ namespace Client.CLI
 
             var rec1 = recRepo.Read(id: 1);
             var sheet1 = pdfRepo.Read(id: 1);
+
+            PdfGenerator.Generate(@"C:\Users\horga\Documents\GitHub\PM_OlahLevente\PM_OlahLevente\template.xml", @"C:\Users\horga\Desktop\TEST_MUSIC.pdf");
         }
     }
 }

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Backend\Services\PdfGenerationService\PdfGenerationService.csproj" />
     <ProjectReference Include="..\..\Backend\Storage\Repository\Repository.csproj" />
   </ItemGroup>
 
