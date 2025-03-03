@@ -1,5 +1,5 @@
-﻿using Models;
-using PdfGenerationService;
+﻿using BusinessLogic;
+using Models;
 using Repository;
 using Repository.ModelRepos;
 
@@ -13,16 +13,18 @@ namespace Client.CLI
             var pdf1 = new Pdf() { Name = "asd.pdf", Content = [], CreatedAt = new System.DateTime(2003, 10, 16) };
 
             SheetMusicMakerDBContext ctx = new();
+
             RecordingRepository recRepo = new(ctx);
             PdfRepository pdfRepo = new(ctx);
 
-            recRepo.Create(recording1);
-            pdfRepo.Create(pdf1);
+            RecordingLogic recordingLogic = new(recRepo);
+            PdfLogic pdfLogic = new(pdfRepo);
 
-            var rec1 = recRepo.Read(id: 1);
-            var sheet1 = pdfRepo.Read(id: 1);
+            recordingLogic.Create(recording1);
+            pdfLogic.Create(pdf1);
 
-            PdfGenerator.Generate(@"C:\Users\horga\Documents\GitHub\PM_OlahLevente\PM_OlahLevente\template.xml", @"C:\Users\horga\Desktop\TEST_MUSIC.pdf");
+            var rec1 = recordingLogic.Read(id: 1);
+            var sheet1 = pdfLogic.Read(id: 1);
         }
     }
 }
