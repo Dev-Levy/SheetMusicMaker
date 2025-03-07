@@ -10,7 +10,7 @@ namespace Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required byte[] Content { get; set; }
+        public required string Url { get; set; }
         public required DateTime CreatedAt { get; set; }
     }
 }

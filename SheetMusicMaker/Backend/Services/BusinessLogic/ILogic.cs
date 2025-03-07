@@ -12,7 +12,7 @@ namespace BusinessLogic
         Pdf ReadPdf(int id);
         Recording ReadRecording(int id);
         IQueryable<Pdf> RealAllPdf();
-        IQueryable<Recording> RealAllRecording();
+        IQueryable<Recording> ReadAllRecording();
         void UpdatePdf(Pdf rec);
         void UpdateRecording(Recording rec);
     }

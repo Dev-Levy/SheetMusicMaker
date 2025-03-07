@@ -8,10 +8,36 @@ namespace Endpoint.Controllers
     [ApiController]
     public class RecordingController(ILogic logic) : ControllerBase
     {
-        [HttpGet("{id}")]
-        public Recording Read(int id)
+        [HttpPost]
+        public IActionResult Create([FromBody] Recording recording)
         {
-            return logic.ReadRecording(id);
+            logic.CreateRecording(recording);
+
+            return Ok("File upload complete!");
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Read(int id)
+        {
+            Recording recording = logic.ReadRecording(id);
+
+            return Ok(recording);
+        }
+
+        [HttpGet]
+        public IActionResult ReadAll(int id)
+        {
+            var recordings = logic.ReadAllRecording();
+
+            return Ok(recordings);
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            logic.DeleteRecording(id);
+
+            return Ok();
         }
     }
 }

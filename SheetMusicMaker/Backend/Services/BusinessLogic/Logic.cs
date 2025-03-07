@@ -19,7 +19,7 @@ namespace BusinessLogic
             return recRepository.Read(id);
         }
 
-        public IQueryable<Recording> RealAllRecording()
+        public IQueryable<Recording> ReadAllRecording()
         {
             return recRepository.ReadAll();
         }
