@@ -1,5 +1,4 @@
 using BusinessLogic;
-using BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,8 +23,7 @@ namespace Endpoint
             builder.Services.AddTransient<SheetMusicMakerDBContext>();
             builder.Services.AddTransient<IRepository<Recording>, RecordingRepository>();
             builder.Services.AddTransient<IRepository<Pdf>, PdfRepository>();
-            builder.Services.AddTransient<IPdfLogic, PdfLogic>();
-            builder.Services.AddTransient<IRecordingLogic, RecordingLogic>();
+            builder.Services.AddTransient<ILogic, Logic>();
 
             var app = builder.Build();
 
