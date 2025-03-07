@@ -33,6 +33,12 @@ namespace Endpoint
                 app.UseSwaggerUI();
             }
 
+            app.UseCors(x => x
+                         .AllowCredentials()
+                         .AllowAnyMethod()
+                         .AllowAnyHeader()
+                         .WithOrigins("http://localhost:5173"));
+
             app.UseRouting();
             app.MapControllers();
 

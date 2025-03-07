@@ -23,6 +23,11 @@ namespace Repository
             }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) { }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Pdf>().HasData(
+                new Pdf() { Id = 1, Name = "BENIKE.pdf", Url = "asd", CreatedAt = new System.DateTime(2003, 10, 12) },
+                new Pdf() { Id = 2, Name = "LEVIKE.pdf", Url = "qwe", CreatedAt = new System.DateTime(2003, 10, 16) });
+        }
     }
 }
