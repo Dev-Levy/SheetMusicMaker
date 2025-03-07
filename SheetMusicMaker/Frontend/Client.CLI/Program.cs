@@ -17,14 +17,13 @@ namespace Client.CLI
             RecordingRepository recRepo = new(ctx);
             PdfRepository pdfRepo = new(ctx);
 
-            RecordingLogic recordingLogic = new(recRepo);
-            PdfLogic pdfLogic = new(pdfRepo);
+            Logic logic = new(recRepo, pdfRepo);
 
-            recordingLogic.Create(recording1);
-            pdfLogic.Create(pdf1);
+            logic.CreateRecording(recording1);
+            logic.CreatePdf(pdf1);
 
-            var rec1 = recordingLogic.Read(id: 1);
-            var sheet1 = pdfLogic.Read(id: 1);
+            var rec1 = logic.ReadRecording(id: 1);
+            var sheet1 = logic.ReadPdf(id: 1);
         }
     }
 }

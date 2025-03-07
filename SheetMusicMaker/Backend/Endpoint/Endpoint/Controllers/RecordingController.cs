@@ -1,4 +1,4 @@
-﻿using BusinessLogic.Interfaces;
+﻿using BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
@@ -6,12 +6,12 @@ namespace Endpoint.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecordingController(IRecordingLogic recordingLogic) : ControllerBase
+    public class RecordingController(ILogic logic) : ControllerBase
     {
         [HttpGet("{id}")]
         public Recording Read(int id)
         {
-            return recordingLogic.Read(id);
+            return logic.ReadRecording(id);
         }
     }
 }
