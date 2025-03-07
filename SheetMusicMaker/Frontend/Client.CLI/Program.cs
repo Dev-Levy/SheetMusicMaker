@@ -10,21 +10,20 @@ namespace Client.CLI
         static void Main(string[] args)
         {
             var recording1 = new Recording() { SampleRate = 44100, SamplesJson = """[-0.7215260011951632, -0.07588045874281213, 0.21186210277807715, -0.040237382572468006, 0.9971275226378027, 0.49393531705285687, 0.3294170701450472, 0.13894373490541412, 0.6082752365243496, 0.3672959071141233]""" };
-            var pdf1 = new Pdf() { Name = "asd.pdf", Content = [], CreatedAt = new System.DateTime(2003, 10, 16) };
+            var pdf1 = new Pdf() { Name = "asd.pdf", Url = "asd", CreatedAt = new System.DateTime(2003, 10, 16) };
 
             SheetMusicMakerDBContext ctx = new();
 
             RecordingRepository recRepo = new(ctx);
             PdfRepository pdfRepo = new(ctx);
 
-            RecordingLogic recordingLogic = new(recRepo);
-            PdfLogic pdfLogic = new(pdfRepo);
+            Logic logic = new(recRepo, pdfRepo);
 
-            recordingLogic.Create(recording1);
-            pdfLogic.Create(pdf1);
+            logic.CreateRecording(recording1);
+            logic.CreatePdf(pdf1);
 
-            var rec1 = recordingLogic.Read(id: 1);
-            var sheet1 = pdfLogic.Read(id: 1);
+            var rec1 = logic.ReadRecording(id: 1);
+            var sheet1 = logic.ReadPdf(id: 1);
         }
     }
 }
