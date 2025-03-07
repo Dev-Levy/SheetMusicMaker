@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using System.IO;
+using NAudio.Wave;
 
 namespace Endpoint.Controllers
 {
@@ -15,16 +15,21 @@ namespace Endpoint.Controllers
         {
             try
             {
-                Stream stream = file.OpenReadStream();
-                byte[] content = new byte[file.Length];
+                using var stream = file.OpenReadStream();
+                using var reader = new WaveFileReader(stream);
+                float[] samples = new float[reader.SampleCount];
+                for (int i = 0; i < reader.SampleCount; i++)
+                {
+                    samples[i] = reader.ReadNextSampleFrame()[0];
+                }
 
-                stream.Read(content, 0, (int)file.Length);
                 logic.CreateRecording(new Recording()
                 {
                     FileName = file.FileName,
                     SampleRate = 44100,
-                    Samples = content
+                    Samples = samples
                 });
+
             }
             catch
             {

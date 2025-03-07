@@ -10,6 +10,6 @@ namespace Models
         public int Id { get; set; }
         public required string FileName { get; set; }
         public required int SampleRate { get; set; }
-        public required byte[] Samples { get; set; }
+        public required float[] Samples { get; set; }
     }
 }
