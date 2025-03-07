@@ -1,6 +1,8 @@
 ﻿using BusinessLogic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using System.IO;
 
 namespace Endpoint.Controllers
 {
@@ -9,11 +11,20 @@ namespace Endpoint.Controllers
     public class RecordingController(ILogic logic) : ControllerBase
     {
         [HttpPost]
-        public IActionResult Create([FromBody] Recording recording)
+        public IActionResult Create([FromForm] IFormFile file)
         {
             try
             {
-                logic.CreateRecording(recording);
+                Stream stream = file.OpenReadStream();
+                byte[] content = new byte[file.Length];
+
+                stream.Read(content, 0, (int)file.Length);
+                logic.CreateRecording(new Recording()
+                {
+                    FileName = file.FileName,
+                    SampleRate = 44100,
+                    Samples = content
+                });
             }
             catch
             {
@@ -39,7 +50,7 @@ namespace Endpoint.Controllers
         }
 
         [HttpGet]
-        public IActionResult ReadAll(int id)
+        public IActionResult ReadAll()
         {
             try
             {

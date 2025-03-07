@@ -1,10 +1,16 @@
 <script>
-    import { GetPdf } from './lib/fetchingData.js'
+    let file = $state();
+    import {UploadWav} from './lib/CodeBehind';
 </script>
 
 <main>
     <h1>Hej</h1>
-    <p>Benike naon jófej</p>
-    <p>És Marci is</p>
-    <button onclick={() => GetPdf(-1)}>JAJDEJÓGOMB</button>
+
+    <h2>Try my sheet music maker app</h2>
+    <input type="file" bind:value={file} accept=".wav">
+    <button onclick={()=>UploadWav(file)}>Upload</button>
+
+    <h2>Try downloading your PDF</h2>
+    <p>PDF created!</p>
+    <button>Download</button>
 </main>

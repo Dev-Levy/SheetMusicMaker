@@ -15,8 +15,9 @@ namespace Repository.ModelRepos
         public override void Update(Recording item)
         {
             var old = Read(item.Id);
+            old.FileName = item.FileName;
             old.SampleRate = item.SampleRate;
-            old.SamplesJson = item.SamplesJson;
+            old.Samples = item.Samples;
         }
     }
 }
