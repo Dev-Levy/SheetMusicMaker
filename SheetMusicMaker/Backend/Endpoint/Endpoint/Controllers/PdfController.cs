@@ -11,12 +11,20 @@ namespace Endpoint.Controllers
         [HttpGet("{id}")]
         public IActionResult Read(int id)
         {
-            Pdf pdf = logic.ReadPdf(id);
+            try
+            {
+                Pdf pdf = logic.ReadPdf(id);
 
-            string name = pdf.Name;
-            byte[] bytes = System.IO.File.ReadAllBytes(pdf.Url);
+                string name = pdf.Name;
+                byte[] bytes = System.IO.File.ReadAllBytes(pdf.Url);
 
-            return File(bytes, "application/pdf", name);
+                return File(bytes, "application/pdf", name);
+            }
+            catch
+            {
+                return BadRequest("asd");
+            }
+
         }
     }
 }

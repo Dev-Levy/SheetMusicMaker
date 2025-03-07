@@ -11,7 +11,14 @@ namespace Endpoint.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Recording recording)
         {
-            logic.CreateRecording(recording);
+            try
+            {
+                logic.CreateRecording(recording);
+            }
+            catch
+            {
+                return BadRequest("asd");
+            }
 
             return Ok("File upload complete!");
         }
@@ -19,25 +26,46 @@ namespace Endpoint.Controllers
         [HttpGet("{id}")]
         public IActionResult Read(int id)
         {
-            Recording recording = logic.ReadRecording(id);
+            try
+            {
+                Recording recording = logic.ReadRecording(id);
+                return Ok(recording);
+            }
+            catch
+            {
+                return BadRequest("asd");
+            }
 
-            return Ok(recording);
         }
 
         [HttpGet]
         public IActionResult ReadAll(int id)
         {
-            var recordings = logic.ReadAllRecording();
+            try
+            {
+                var recordings = logic.ReadAllRecording();
+                return Ok(recordings);
+            }
+            catch
+            {
+                return BadRequest("asd");
+            }
 
-            return Ok(recordings);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            logic.DeleteRecording(id);
+            try
+            {
+                logic.DeleteRecording(id);
+                return Ok("Recording deleted!");
+            }
+            catch
+            {
+                return BadRequest("asd");
+            }
 
-            return Ok();
         }
     }
 }
