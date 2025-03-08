@@ -13,6 +13,8 @@ export async function UploadWav(file) {
             console.log("Upload successful:", result);
         } else {
             console.error("Upload failed:", response.statusText);
+            const errorDetails = await response.text();
+            console.error("Error details:", errorDetails);
         }
     } catch (error) {
         console.error("Error uploading file:", error);

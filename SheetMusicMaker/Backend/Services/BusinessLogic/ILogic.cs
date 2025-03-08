@@ -1,5 +1,7 @@
 ﻿using Models;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
@@ -15,5 +17,6 @@ namespace BusinessLogic
         IQueryable<Recording> ReadAllRecording();
         void UpdatePdf(Pdf rec);
         void UpdateRecording(Recording rec);
+        Task<string> StoreRecording(string filename, Stream fileBytes);
     }
 }

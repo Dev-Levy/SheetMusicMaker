@@ -1,11 +1,15 @@
 ﻿using Models;
 using Repository.Generics;
+using System;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
     public class Logic(IRepository<Recording> recRepository, IRepository<Pdf> pdfRepository) : ILogic
     {
+        static readonly string UPLOAD_FOLDER_PATH = "C:\\Users\\horga\\Documents\\1_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM";
         #region CRUD Recording
         public void CreateRecording(Recording rec)
         {
@@ -65,6 +69,20 @@ namespace BusinessLogic
         }
         #endregion
 
+        public async Task<string> StoreRecording(string filename, Stream fileStream)
+        {
+            if (fileStream == null || fileStream.Length == 0)
+            {
+                throw new ArgumentException("No file content provided.");
+            }
 
+            string filePath = Path.Combine(UPLOAD_FOLDER_PATH, filename);
+            using (var fileStreamWriter = new FileStream(filePath, FileMode.Create))
+            {
+                await fileStream.CopyToAsync(fileStreamWriter);
+            }
+
+            return filePath;
+        }
     }
 }

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using NAudio.Wave;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Endpoint.Controllers
 {
@@ -11,32 +13,45 @@ namespace Endpoint.Controllers
     public class RecordingController(ILogic logic) : ControllerBase
     {
         [HttpPost]
-        public IActionResult Create([FromForm] IFormFile file)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
+            var checkResult = CheckFileValidity(file);
+            if (checkResult is not null)
+            {
+                return checkResult;
+            }
+
             try
             {
-                using var stream = file.OpenReadStream();
-                using var reader = new WaveFileReader(stream);
-                float[] samples = new float[reader.SampleCount];
-                for (int i = 0; i < reader.SampleCount; i++)
-                {
-                    samples[i] = reader.ReadNextSampleFrame()[0];
-                }
+                string filePath = await logic.StoreRecording(file.FileName, file.OpenReadStream());
 
                 logic.CreateRecording(new Recording()
                 {
                     FileName = file.FileName,
-                    SampleRate = 44100,
-                    Samples = samples
+                    Url = filePath
                 });
 
+                return Ok(new { Message = "File uploaded successfully." });
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("asd");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private IActionResult? CheckFileValidity(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
             }
 
-            return Ok("File upload complete!");
+            if (file.ContentType != "audio/wav" && !Path.GetExtension(file.FileName).Equals(".wav", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return BadRequest("Invalid file format. Only WAV files are supported.");
+            }
+
+            return null;
         }
 
         [HttpGet("{id}")]
