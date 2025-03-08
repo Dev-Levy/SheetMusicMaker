@@ -1,6 +1,6 @@
 <script>
     let file = $state();
-    import {UploadWav} from './lib/CodeBehind';
+    import {UploadWav, DownloadPdf} from './lib/CodeBehind';
 </script>
 
 <main>
@@ -12,5 +12,5 @@
 
     <h2>Try downloading your PDF</h2>
     <p>PDF created!</p>
-    <button>Download</button>
+    <button onclick={()=>DownloadPdf(2)}>Download</button>
 </main>
