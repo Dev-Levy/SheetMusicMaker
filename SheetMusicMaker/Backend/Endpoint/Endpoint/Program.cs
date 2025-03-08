@@ -37,6 +37,7 @@ namespace Endpoint
                          .AllowCredentials()
                          .AllowAnyMethod()
                          .AllowAnyHeader()
+                         .WithExposedHeaders("Content-Disposition")
                          .WithOrigins("http://localhost:5173"));
 
             app.UseRouting();
