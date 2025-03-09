@@ -16,8 +16,7 @@ namespace Repository.ModelRepos
         {
             var old = Read(item.Id);
             old.FileName = item.FileName;
-            old.SampleRate = item.SampleRate;
-            old.Samples = item.Samples;
+            old.Url = item.Url;
         }
     }
 }
