@@ -1,0 +1,45 @@
+main{
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    width: 80%;
+}
+
+.column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+
+    margin: 0 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
+    text-align: center;
+}
+
+.column:first-child,
+.column:last-child {
+    flex: 2;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
