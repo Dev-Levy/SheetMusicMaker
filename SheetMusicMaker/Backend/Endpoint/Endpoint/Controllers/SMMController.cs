@@ -10,7 +10,7 @@ namespace Endpoint.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecordingController(ILogic logic) : ControllerBase
+    public class SMMController(ILogic logic) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> Upload([FromForm] IFormFile file)
@@ -66,7 +66,6 @@ namespace Endpoint.Controllers
             {
                 return BadRequest("asd");
             }
-
         }
 
         [HttpGet]

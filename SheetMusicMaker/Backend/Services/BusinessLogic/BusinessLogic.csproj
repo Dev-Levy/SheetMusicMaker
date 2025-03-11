@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Models\Models\Models.csproj" />
     <ProjectReference Include="..\..\Storage\Repository\Repository.csproj" />
+    <ProjectReference Include="..\AnalyzerService\AnalyzerService.csproj" />
+    <ProjectReference Include="..\PdfGenerationService\PdfGenerationService.csproj" />
   </ItemGroup>
 
 </Project>

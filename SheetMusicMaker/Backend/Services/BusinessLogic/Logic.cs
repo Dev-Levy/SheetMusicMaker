@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using AnalyzerService;
+using Models;
+using PdfGenerationService;
 using Repository.Generics;
 using System;
 using System.IO;
@@ -10,6 +12,8 @@ namespace BusinessLogic
     public class Logic(IRepository<Recording> recRepository, IRepository<Pdf> pdfRepository) : ILogic
     {
         static readonly string UPLOAD_FOLDER_PATH = "C:\\Users\\horga\\Documents\\1_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM";
+        static readonly string RESULT_FOLDER_PATH = "C:\\Users\\horga\\Documents\\1_PROJEKTMUNKA\\RESULT_FOLDER_SMM";
+
         #region CRUD Recording
         public void CreateRecording(Recording rec)
         {
@@ -83,6 +87,25 @@ namespace BusinessLogic
             }
 
             return filePath;
+        }
+
+        public void Analyze(int id)
+        {
+            //Arrange
+            Recording recording = recRepository.Read(id);
+            string xmlName = recording.FileName + "xml";
+            string filename = "asd.pdf";
+
+            //Act
+            MusicAnalyzer.Analyze(recording, xmlName);
+            PdfGenerator.Generate(Path.Combine(RESULT_FOLDER_PATH, xmlName), Path.Combine(RESULT_FOLDER_PATH, filename));
+
+            //After
+            pdfRepository.Create(new()
+            {
+                Name = filename,
+                Url = Path.Combine(RESULT_FOLDER_PATH, filename)
+            });
         }
     }
 }

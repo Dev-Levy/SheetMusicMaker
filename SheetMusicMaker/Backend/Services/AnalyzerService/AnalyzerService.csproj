@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="template.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="template.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Models\Models\Models.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
@@ -11,6 +10,5 @@ namespace Models
         public int Id { get; set; }
         public required string Name { get; set; }
         public required string Url { get; set; }
-        public required DateTime CreatedAt { get; set; }
     }
 }

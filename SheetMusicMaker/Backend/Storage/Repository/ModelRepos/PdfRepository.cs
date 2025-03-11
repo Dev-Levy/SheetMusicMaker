@@ -17,7 +17,6 @@ namespace Repository.ModelRepos
             var old = Read(item.Id);
             old.Name = item.Name;
             old.Url = item.Url;
-            old.CreatedAt = item.CreatedAt;
         }
     }
 }
