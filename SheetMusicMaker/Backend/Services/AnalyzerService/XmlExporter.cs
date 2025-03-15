@@ -13,10 +13,7 @@ namespace AnalyzerService
 
         public void AppendMeasure(Measure measure, string partname = "P1")
         {
-            var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname);
-
-            if (part == null)
-                throw new NullReferenceException("There are no parts yet in this score!");
+            var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname) ?? throw new NullReferenceException("There are no parts yet in this score!");
             //choosing number
             measure.Number = DecideMeasureNumber(part, measure);
 
@@ -25,17 +22,14 @@ namespace AnalyzerService
         }
         private int DecideMeasureNumber(XElement part, Measure measure)
         {
-            if (part.Elements("measure").Count() == 0)
+            if (!part.Elements("measure").Any())
                 return 1;
             else
-                return int.Parse(part.Elements("measure").Last().Attribute("number").Value) + 1;
+                return int.Parse(part.Elements("measure")?.Last()?.Attribute("number")?.Value) + 1;
         }
         public void AppendNote(Note note, string measureNum = "-1", string partname = "P1")
         {
-            var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname);
-
-            if (part == null)
-                throw new NullReferenceException("There are no parts yet in this score!");
+            var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname) ?? throw new NullReferenceException("There are no parts yet in this score!");
 
             XElement? measure;
             if (measureNum == "-1")
@@ -85,9 +79,9 @@ namespace AnalyzerService
                 new XElement("duration", note.Duration),
                 new XElement("type", note.Type));
         }
-        public void SaveXML(string filename)
+        public void SaveXML(string path)
         {
-            doc.Save(filename + ".xml");
+            doc.Save(path);
         }
     }
 }

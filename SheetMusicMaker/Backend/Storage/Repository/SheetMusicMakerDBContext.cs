@@ -25,21 +25,20 @@ namespace Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Pdf>().HasData(
-                new Pdf()
+            modelBuilder.Entity<Recording>().HasData(
+                new Recording()
                 {
                     Id = 1,
-                    Name = "BENIKE.pdf",
-                    Url = "C:\\Users\\horga\\Documents\\Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf",
-                    CreatedAt = new System.DateTime(2003, 10, 12)
+                    FileName = "example",
+                    Url = @"C:\Users\horga\Documents\1_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\example.wav"
                 },
-                new Pdf()
+                new Recording()
                 {
                     Id = 2,
-                    Name = "LEVIKE.pdf",
-                    Url = "C:\\Users\\horga\\Documents\\jogviszony.pdf",
-                    CreatedAt = new System.DateTime(2003, 10, 16)
+                    FileName = "440",
+                    Url = @"C:\Users\horga\Documents\1_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\440.wav"
                 });
+
         }
     }
 }

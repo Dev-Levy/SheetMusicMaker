@@ -93,19 +93,16 @@ namespace BusinessLogic
         {
             //Arrange
             Recording recording = recRepository.Read(id);
-            string xmlName = recording.FileName + "xml";
-            string filename = "asd.pdf";
+            string xmlOutputPath = Path.Combine(RESULT_FOLDER_PATH, recording.FileName + ".xml");
+            string pdf = recording.FileName + ".pdf";
+            string pdfOutputPath = Path.Combine(RESULT_FOLDER_PATH, pdf);
 
             //Act
-            MusicAnalyzer.Analyze(recording, xmlName);
-            PdfGenerator.Generate(Path.Combine(RESULT_FOLDER_PATH, xmlName), Path.Combine(RESULT_FOLDER_PATH, filename));
+            MusicAnalyzer.Analyze(recording, xmlOutputPath);
+            PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
 
-            //After
-            pdfRepository.Create(new()
-            {
-                Name = filename,
-                Url = Path.Combine(RESULT_FOLDER_PATH, filename)
-            });
+            //Persist
+            pdfRepository.Create(new() { Name = pdf, Url = pdfOutputPath });
         }
     }
 }
