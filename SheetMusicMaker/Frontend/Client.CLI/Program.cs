@@ -13,7 +13,7 @@ namespace Client.CLI
             PdfRepository pdfRepository = new(ctx);
             Logic logic = new(recRepository, pdfRepository);
 
-            logic.Analyze(id: 2);
+            logic.Analyze(id: 3);
         }
     }
 }

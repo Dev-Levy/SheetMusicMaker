@@ -30,13 +30,19 @@ namespace Repository
                 {
                     Id = 1,
                     FileName = "example",
-                    Url = @"C:\Users\horga\Documents\1_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\example.wav"
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\example.wav"
                 },
                 new Recording()
                 {
                     Id = 2,
                     FileName = "440",
-                    Url = @"C:\Users\horga\Documents\1_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\440.wav"
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\440.wav"
+                },
+                new Recording()
+                {
+                    Id = 3,
+                    FileName = "piano",
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\piano.wav"
                 });
 
         }

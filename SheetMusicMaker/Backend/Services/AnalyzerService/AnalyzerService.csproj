@@ -7,18 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="package_setup.bat" />
+    <None Remove="pitch_analyzer.py" />
     <None Remove="template.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="package_setup.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pitch_analyzer.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="template.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FftSharp" Version="2.2.0" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="pythonnet" Version="3.0.5" />
   </ItemGroup>
 
   <ItemGroup>

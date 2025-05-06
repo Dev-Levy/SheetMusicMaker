@@ -11,8 +11,8 @@ namespace BusinessLogic
 {
     public class Logic(IRepository<Recording> recRepository, IRepository<Pdf> pdfRepository) : ILogic
     {
-        static readonly string UPLOAD_FOLDER_PATH = "C:\\Users\\horga\\Documents\\1_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM";
-        static readonly string RESULT_FOLDER_PATH = "C:\\Users\\horga\\Documents\\1_PROJEKTMUNKA\\RESULT_FOLDER_SMM";
+        static readonly string UPLOAD_FOLDER_PATH = "C:\\Users\\horga\\Documents\\2_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM";
+        static readonly string RESULT_FOLDER_PATH = "C:\\Users\\horga\\Documents\\2_PROJEKTMUNKA\\RESULT_FOLDER_SMM";
 
         #region CRUD Recording
         public void CreateRecording(Recording rec)
