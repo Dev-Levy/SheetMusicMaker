@@ -1,6 +1,6 @@
-﻿using Models;
+﻿using System.Diagnostics;
+using Models;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace AnalyzerService
 {
@@ -10,15 +10,32 @@ namespace AnalyzerService
     {
         public static void Analyze(Recording recording, string outputPath)
         {
+            InstallPackages();
+
+            Console.WriteLine("Analyzing pitch! (Analyzer service)");
             Frame[] frames = AnalyzePitch(recording.Url);
 
-            List<(double, double, string)> values = [];
-            foreach (var frame in frames)
-                values.Add((frame.Time, frame.Pitch, FrequencyToNoteName(frame.Pitch)));
+            Console.WriteLine("Analyzing tempo! (Analyzer service)");
+            double tempo = AnalyzeTempo(recording.Url);
 
-            var groups = values.GroupBy(v => v.Item3);
+            Console.WriteLine("Calculating note! (Analyzer service)");
+            Array.ForEach(frames, f => f.Note = FrequencyToNoteName(f.Pitch));
 
-            Console.ReadLine();
+            Console.WriteLine("Calculating intervals! (Analyzer service)");
+            List<NoteIntervals> intervals = AggregateFrames(frames);
+
+            Console.WriteLine();
+            Console.WriteLine($"The tempo is {tempo}BPM");
+            foreach (NoteIntervals interval in intervals)
+            {
+                if (interval.Duration > 0.1)
+                {
+                    Console.WriteLine($"Note: {interval.Note}");
+                    Console.WriteLine($"  Start Time: {interval.StartTime:F4} s");
+                    Console.WriteLine($"  End Time: {interval.EndTime:F4} s");
+                    Console.WriteLine($"  Duration: {interval.Duration:F4} s");
+                }
+            }
         }
 
         private static string FrequencyToNoteName(double frequency)
@@ -37,9 +54,7 @@ namespace AnalyzerService
 
         private static Frame[] AnalyzePitch(string audioPath)
         {
-            InstallPackages();
-
-            string pyFile = "pitch_analyzer.py";
+            string pyFile = "pitch.py";
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string procPyFilePath = Path.Combine(appDirectory, pyFile);
 
@@ -50,13 +65,16 @@ namespace AnalyzerService
 
             var processInfo = new ProcessStartInfo
             {
-                FileName = "python",  // Or full path like @"C:\Python39\python.exe"
+                FileName = "python",
+                WorkingDirectory = appDirectory,
                 Arguments = $"{pyFile} \"{audioPath}\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
+            Console.WriteLine("Pitch analysis! (Python process call)");
+            Console.WriteLine("File: " + audioPath);
             using Process process = new() { StartInfo = processInfo };
             process.Start();
 
@@ -66,6 +84,92 @@ namespace AnalyzerService
             Frame[] frames = JsonConvert.DeserializeObject<Frame[]>(jsonOutput) ?? [];
 
             return frames;
+        }
+
+        private static double AnalyzeTempo(string audioPath)
+        {
+            string pyFile = "tempo.py";
+            string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string procPyFilePath = Path.Combine(appDirectory, pyFile);
+
+            if (!File.Exists(procPyFilePath))
+            {
+                throw new FileNotFoundException("Python analyzer process file not found", procPyFilePath);
+            }
+
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = "python",
+                WorkingDirectory = appDirectory,
+                Arguments = $"{pyFile} \"{audioPath}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            Console.WriteLine("Tempo analysis! (Python process call)");
+            Console.WriteLine("File: " + audioPath);
+            using Process process = new() { StartInfo = processInfo };
+            process.Start();
+
+            string jsonOutput = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            double tempo = JsonConvert.DeserializeObject<double>(jsonOutput);
+
+            return 0;
+        }
+
+        private static List<NoteIntervals> AggregateFrames(Frame[] frames)
+        {
+            List<NoteIntervals> intervals = [];
+            if (frames.Length == 0)
+            {
+                Console.WriteLine("No data to process.");
+            }
+            else
+            {
+                string currNote = frames[0].Note;
+                double startTime = frames[0].Time;
+                double endTime = frames[0].Time;
+
+                for (int i = 0; i < frames.Length; i++)
+                {
+                    Frame frame = frames[i];
+
+                    if (frame.Note == currNote)
+                    {
+                        endTime = frame.Time;
+                    }
+                    else
+                    {
+                        double duration = endTime - startTime;
+
+                        intervals.Add(new()
+                        {
+                            Note = currNote,
+                            StartTime = startTime,
+                            EndTime = endTime,
+                            Duration = duration
+                        });
+
+                        currNote = frame.Note;
+                        startTime = frame.Time;
+                        endTime = frame.Time;
+                    }
+                }
+
+                double lastDuration = endTime - startTime;
+
+                intervals.Add(new()
+                {
+                    Note = currNote,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    Duration = lastDuration
+                });
+            }
+            return intervals;
         }
 
         private static void InstallPackages()
@@ -89,6 +193,7 @@ namespace AnalyzerService
                 RedirectStandardError = true
             };
 
+            Console.WriteLine("Installing packages! (Python process call)");
             using Process proc = new() { StartInfo = processInfo };
             proc.Start();
 
@@ -102,11 +207,21 @@ namespace AnalyzerService
                 throw new Exception($"Package installation failed.\nOutput: {output}\nError: {error}");
             }
         }
+
         public class Frame
         {
             public double Time { get; set; }
             public double Pitch { get; set; }
-            public bool IsVoiced { get; set; }
+            [JsonIgnore]
+            public string Note { get; set; }
+        }
+
+        public class NoteIntervals
+        {
+            public string Note { get; set; }
+            public double StartTime { get; set; }
+            public double EndTime { get; set; }
+            public double Duration { get; set; }
         }
     }
 }

@@ -15,7 +15,6 @@ def get_pitch_per_frame(y, sr, frame_length=2048, hop_length=512, fmin=50, fmax=
         fill_na=0
     )
 
-    # Convert frame indices to timestamps
     times = librosa.frames_to_time(
         np.arange(len(pitches)),
         hop_length=hop_length,
@@ -33,9 +32,8 @@ if __name__ == "__main__":
     result = []
     for time, pitch in zip(times, pitches):
         result.append({
-            "time": float(time),  # Convert numpy.float32 to native Python float
-            "pitch": float(pitch),
-            "isVoiced": bool(pitch > 0)  # Optional: flag for voiced frames
+            "time": float(time),
+            "pitch": float(pitch)
         })
         
     print(json.dumps(result, indent= 4 ))

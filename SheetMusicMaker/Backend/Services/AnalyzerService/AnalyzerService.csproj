@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Remove="package_setup.bat" />
-    <None Remove="pitch_analyzer.py" />
     <None Remove="template.xml" />
   </ItemGroup>
 
@@ -16,7 +15,10 @@
     <Content Include="package_setup.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pitch_analyzer.py">
+    <Content Include="tempo.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pitch.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="template.xml">

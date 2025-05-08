@@ -1,4 +1,5 @@
-﻿using BusinessLogic;
+﻿using System;
+using BusinessLogic;
 using Repository;
 using Repository.ModelRepos;
 
@@ -13,7 +14,8 @@ namespace Client.CLI
             PdfRepository pdfRepository = new(ctx);
             Logic logic = new(recRepository, pdfRepository);
 
-            logic.Analyze(id: 3);
+            Console.WriteLine("Starting process! (Main)");
+            logic.Analyze(id: 1);
         }
     }
 }

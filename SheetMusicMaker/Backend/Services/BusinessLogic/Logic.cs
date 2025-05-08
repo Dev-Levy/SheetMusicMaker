@@ -1,11 +1,10 @@
-﻿using AnalyzerService;
-using Models;
-using PdfGenerationService;
-using Repository.Generics;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AnalyzerService;
+using Models;
+using Repository.Generics;
 
 namespace BusinessLogic
 {
@@ -98,11 +97,13 @@ namespace BusinessLogic
             string pdfOutputPath = Path.Combine(RESULT_FOLDER_PATH, pdf);
 
             //Act
+            Console.WriteLine("Calling analyzer! (Logic)");
             MusicAnalyzer.Analyze(recording, xmlOutputPath);
-            PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
+            Console.ReadLine();
+            //PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
 
-            //Persist
-            pdfRepository.Create(new() { Name = pdf, Url = pdfOutputPath });
+            ////Persist
+            //pdfRepository.Create(new() { Name = pdf, Url = pdfOutputPath });
         }
     }
 }
