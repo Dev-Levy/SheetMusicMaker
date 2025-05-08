@@ -1,6 +1,6 @@
-﻿using Models;
+﻿using System.Diagnostics;
+using Models;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace AnalyzerService
 {
@@ -102,6 +102,7 @@ namespace AnalyzerService
                 throw new Exception($"Package installation failed.\nOutput: {output}\nError: {error}");
             }
         }
+
         public class Frame
         {
             public double Time { get; set; }
