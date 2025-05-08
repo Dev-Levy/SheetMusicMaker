@@ -16,7 +16,7 @@ namespace AnalyzerService
             Frame[] frames = AnalyzePitch(recording.Url);
 
             Console.WriteLine("Analyzing tempo! (Analyzer service)");
-            double tempo = AnalyzeTempo(recording.Url);
+            TempoClass tempo = AnalyzeTempo(recording.Url);
 
             Console.WriteLine("Calculating note! (Analyzer service)");
             Array.ForEach(frames, f => f.Note = FrequencyToNoteName(f.Pitch));
@@ -25,7 +25,8 @@ namespace AnalyzerService
             List<NoteIntervals> intervals = AggregateFrames(frames);
 
             Console.WriteLine();
-            Console.WriteLine($"The tempo is {tempo}BPM");
+            Console.WriteLine($"The tempo is {tempo.Tempo}BPM");
+            double beat = 60 / tempo.Tempo;
             foreach (NoteIntervals interval in intervals)
             {
                 if (interval.Duration > 0.1)
@@ -34,6 +35,8 @@ namespace AnalyzerService
                     Console.WriteLine($"  Start Time: {interval.StartTime:F4} s");
                     Console.WriteLine($"  End Time: {interval.EndTime:F4} s");
                     Console.WriteLine($"  Duration: {interval.Duration:F4} s");
+                    Console.WriteLine($"  This note will be {(interval.Duration / beat):F4} beat");
+                    Console.WriteLine($"  This note would be {RoundToNearestHalf(interval.Duration / beat):F4} beat (rounded)");
                 }
             }
         }
@@ -86,7 +89,7 @@ namespace AnalyzerService
             return frames;
         }
 
-        private static double AnalyzeTempo(string audioPath)
+        private static TempoClass AnalyzeTempo(string audioPath)
         {
             string pyFile = "tempo.py";
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -115,9 +118,10 @@ namespace AnalyzerService
             string jsonOutput = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
-            double tempo = JsonConvert.DeserializeObject<double>(jsonOutput);
+            TempoClass tempo = JsonConvert.DeserializeObject<TempoClass>(jsonOutput)
+                               ?? new TempoClass { Tempo = 0, Duration = 0 };
 
-            return 0;
+            return tempo;
         }
 
         private static List<NoteIntervals> AggregateFrames(Frame[] frames)
@@ -208,6 +212,11 @@ namespace AnalyzerService
             }
         }
 
+        public static double RoundToNearestHalf(double value)
+        {
+            return Math.Round(value * 2) / 2;
+        }
+
         public class Frame
         {
             public double Time { get; set; }
@@ -221,6 +230,12 @@ namespace AnalyzerService
             public string Note { get; set; }
             public double StartTime { get; set; }
             public double EndTime { get; set; }
+            public double Duration { get; set; }
+        }
+
+        public class TempoClass
+        {
+            public double Tempo { get; set; }
             public double Duration { get; set; }
         }
     }

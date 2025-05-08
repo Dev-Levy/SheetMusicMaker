@@ -14,7 +14,8 @@ if __name__ == "__main__":
     duration = librosa.get_duration(y=y, sr=sr)
 
     result = {
-        "tempo": float(tempo)
+        "tempo": float(tempo),
+        "duration": float(duration)
     }
 
     print(json.dumps(result, indent=4))
