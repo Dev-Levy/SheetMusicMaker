@@ -1,22 +1,20 @@
-﻿using System.Diagnostics;
-using Models;
+﻿using Models.Music;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace AnalyzerService
 {
-    public record PitchInterval(double PitchHz, double StartTime, double EndTime, double Duration);
-
     public class MusicAnalyzer
     {
-        public static void Analyze(Recording recording, string outputPath)
+        public static List<Note> MakeNotes(string url)
         {
             InstallPackages();
 
             Console.WriteLine("Analyzing pitch! (Analyzer service)");
-            Frame[] frames = AnalyzePitch(recording.Url);
+            Frame[] frames = AnalyzePitch(url);
 
             Console.WriteLine("Analyzing tempo! (Analyzer service)");
-            TempoClass tempo = AnalyzeTempo(recording.Url);
+            TempoClass tempo = AnalyzeTempo(url);
 
             Console.WriteLine("Calculating note! (Analyzer service)");
             Array.ForEach(frames, f => f.Note = FrequencyToNoteName(f.Pitch));
@@ -27,6 +25,7 @@ namespace AnalyzerService
             Console.WriteLine();
             Console.WriteLine($"The tempo is {tempo.Tempo}BPM");
             double beat = 60 / tempo.Tempo;
+
             foreach (NoteIntervals interval in intervals)
             {
                 if (interval.Duration > 0.1)
@@ -36,28 +35,45 @@ namespace AnalyzerService
                     Console.WriteLine($"  End Time: {interval.EndTime:F4} s");
                     Console.WriteLine($"  Duration: {interval.Duration:F4} s");
                     Console.WriteLine($"  This note will be {(interval.Duration / beat):F4} beat");
-                    Console.WriteLine($"  This note would be {RoundToNearestHalf(interval.Duration / beat):F4} beat (rounded)");
                 }
             }
+
+            List<Note> notes = [];
+            foreach (NoteIntervals inter in intervals)
+            {
+                if (inter.Duration > 0.1) //ehh, some filtering is needed
+                {
+                    int duration = (int)Math.Round(inter.Duration / beat);
+                    string type = DecideType(duration);
+                    Note note = new()
+                    {
+                        Pitch = new Pitch(inter.Note),
+                        Duration = duration,
+                        Type = type
+                    };
+                    notes.Add(note);
+                }
+            }
+
+            return notes;
         }
 
-        private static string FrequencyToNoteName(double frequency)
+        private static string DecideType(int duration)
         {
-            if (frequency <= 0) return "Silence";
-
-            double midiNote = 69 + 12 * Math.Log2(frequency / 440.0);
-            int noteNumber = (int)Math.Round(midiNote);
-
-            string[] noteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-            int octave = (noteNumber / 12) - 1;
-            string noteName = noteNames[noteNumber % 12];
-
-            return $"{noteName}{octave}";
+            string result = duration switch
+            {
+                4 => "whole",
+                2 => "half",
+                1 => "quarter",
+                _ => "##ERROR##",
+            };
+            return result;
         }
+
 
         private static Frame[] AnalyzePitch(string audioPath)
         {
-            string pyFile = "pitch.py";
+            string pyFile = "python/pitch.py";
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string procPyFilePath = Path.Combine(appDirectory, pyFile);
 
@@ -91,7 +107,7 @@ namespace AnalyzerService
 
         private static TempoClass AnalyzeTempo(string audioPath)
         {
-            string pyFile = "tempo.py";
+            string pyFile = "python/tempo.py";
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string procPyFilePath = Path.Combine(appDirectory, pyFile);
 
@@ -122,6 +138,20 @@ namespace AnalyzerService
                                ?? new TempoClass { Tempo = 0, Duration = 0 };
 
             return tempo;
+        }
+
+        private static string FrequencyToNoteName(double frequency)
+        {
+            if (frequency <= 0) return "Silence";
+
+            double midiNote = 69 + 12 * Math.Log2(frequency / 440.0);
+            int noteNumber = (int)Math.Round(midiNote);
+
+            string[] noteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+            int octave = (noteNumber / 12) - 1;
+            string noteName = noteNames[noteNumber % 12];
+
+            return $"{noteName}{octave}";
         }
 
         private static List<NoteIntervals> AggregateFrames(Frame[] frames)
@@ -179,7 +209,7 @@ namespace AnalyzerService
         private static void InstallPackages()
         {
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string batFilePath = Path.Combine(appDirectory, "package_setup.bat");
+            string batFilePath = Path.Combine(appDirectory, "helper/package_setup.bat");
 
             if (!File.Exists(batFilePath))
             {
@@ -211,32 +241,26 @@ namespace AnalyzerService
                 throw new Exception($"Package installation failed.\nOutput: {output}\nError: {error}");
             }
         }
+    }
+    public class Frame
+    {
+        public double Time { get; set; }
+        public double Pitch { get; set; }
+        [JsonIgnore]
+        public string Note { get; set; }
+    }
 
-        public static double RoundToNearestHalf(double value)
-        {
-            return Math.Round(value * 2) / 2;
-        }
+    public class NoteIntervals
+    {
+        public string Note { get; set; }
+        public double StartTime { get; set; }
+        public double EndTime { get; set; }
+        public double Duration { get; set; }
+    }
 
-        public class Frame
-        {
-            public double Time { get; set; }
-            public double Pitch { get; set; }
-            [JsonIgnore]
-            public string Note { get; set; }
-        }
-
-        public class NoteIntervals
-        {
-            public string Note { get; set; }
-            public double StartTime { get; set; }
-            public double EndTime { get; set; }
-            public double Duration { get; set; }
-        }
-
-        public class TempoClass
-        {
-            public double Tempo { get; set; }
-            public double Duration { get; set; }
-        }
+    public class TempoClass
+    {
+        public double Tempo { get; set; }
+        public double Duration { get; set; }
     }
 }

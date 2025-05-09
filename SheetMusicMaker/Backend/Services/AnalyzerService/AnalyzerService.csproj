@@ -12,16 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="package_setup.bat">
+    <Content Include="helper\package_setup.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="tempo.py">
+    <Content Include="python\tempo.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pitch.py">
+    <Content Include="python\pitch.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="template.xml">
+    <Content Include="helper\template.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

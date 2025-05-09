@@ -26,30 +26,30 @@ namespace Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Recording>().HasData(
-                new Recording()
-                {
-                    Id = 1,
-                    FileName = "example",
-                    Url = @"C:\Users\OLL4BP\Downloads\Instrument.wav"
-                }
                 //new Recording()
                 //{
                 //    Id = 1,
                 //    FileName = "example",
-                //    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\example.wav"
-                //},
-                //new Recording()
-                //{
-                //    Id = 2,
-                //    FileName = "440",
-                //    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\440.wav"
-                //},
-                //new Recording()
-                //{
-                //    Id = 3,
-                //    FileName = "piano",
-                //    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\piano.wav"
+                //    Url = @"C:\Users\OLL4BP\Downloads\Instrument.wav"
                 //}
+                new Recording()
+                {
+                    Id = 1,
+                    FileName = "example",
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\example.wav"
+                },
+                new Recording()
+                {
+                    Id = 2,
+                    FileName = "440",
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\440.wav"
+                },
+                new Recording()
+                {
+                    Id = 3,
+                    FileName = "piano",
+                    Url = @"C:\Users\horga\Documents\2_PROJEKTMUNKA\UPLOAD_FOLDER_SMM\piano8.wav"
+                }
                 );
 
         }

@@ -7,9 +7,23 @@
         public required string Type { get; set; }
     }
 
-    public class Pitch(string step, int octave)
+    public class Pitch
     {
-        public required string Step { get; set; } = step;
-        public required int Octave { get; set; } = octave;
+        public string Step { get; set; }
+        public int Octave { get; set; }
+
+        public Pitch(string noteName)
+        {
+            if (noteName.Length == 2) //C4
+            {
+                Step = noteName[..1];
+                Octave = int.Parse(noteName[1..]);
+            }
+            else //C#4
+            {
+                Step = noteName[..2];
+                Octave = int.Parse(noteName[2..]);
+            }
+        }
     }
 }

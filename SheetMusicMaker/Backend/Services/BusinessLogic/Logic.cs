@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AnalyzerService;
+using Models;
+using Repository.Generics;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AnalyzerService;
-using Models;
-using Repository.Generics;
 
 namespace BusinessLogic
 {
@@ -98,7 +98,7 @@ namespace BusinessLogic
 
             //Act
             Console.WriteLine("Calling analyzer! (Logic)");
-            MusicAnalyzer.Analyze(recording, xmlOutputPath);
+            MusicXmlMaker.MakeXML(recording, xmlOutputPath);
             Console.ReadLine();
             //PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
 
