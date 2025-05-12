@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace PdfGenerationService
 {
@@ -18,6 +19,7 @@ namespace PdfGenerationService
                     CreateNoWindow = true
                 };
 
+                Console.WriteLine("PDF creation! (MuseScore process call)");
                 Process.Start(startInfo);
 
                 return true;

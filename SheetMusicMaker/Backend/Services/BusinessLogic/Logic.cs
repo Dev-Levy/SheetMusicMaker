@@ -1,5 +1,6 @@
 ﻿using AnalyzerService;
 using Models;
+using PdfGenerationService;
 using Repository.Generics;
 using System;
 using System.IO;
@@ -99,11 +100,18 @@ namespace BusinessLogic
             //Act
             Console.WriteLine("Calling analyzer! (Logic)");
             MusicXmlMaker.MakeXML(recording, xmlOutputPath);
-            Console.ReadLine();
-            //PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
 
-            ////Persist
-            //pdfRepository.Create(new() { Name = pdf, Url = pdfOutputPath });
+            Console.WriteLine();
+            Console.WriteLine("Generating PDF! (Logic)");
+            bool created = PdfGenerator.Generate(xmlOutputPath, pdfOutputPath);
+
+            if (created)
+                Console.WriteLine($"Sheet music created at: {pdfOutputPath}");
+            else
+                Console.WriteLine("Pdf creation failed!");
+
+            //Persist
+            pdfRepository.Create(new() { Name = pdf, Url = pdfOutputPath });
         }
     }
 }

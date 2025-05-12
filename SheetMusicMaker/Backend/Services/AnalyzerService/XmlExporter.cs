@@ -6,27 +6,26 @@ namespace AnalyzerService
     internal class XmlExporter
     {
         private readonly XDocument doc;
+
         public XmlExporter()
         {
-            doc = XDocument.Load("template.xml");
+            string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            string templateName = "helper/template.xml";
+            string templateFilepath = Path.Combine(appDirectory, templateName);
+            doc = XDocument.Load(templateFilepath);
         }
 
         public void AppendMeasure(Measure measure, string partname = "P1")
         {
             var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname) ?? throw new NullReferenceException("There are no parts yet in this score!");
             //choosing number
-            measure.Number = DecideMeasureNumber(part, measure);
+            measure.Number = DecideMeasureNumber(part);
 
             XElement ser_measure = SerializeMeasure(measure);
             part.Add(ser_measure);
         }
-        private int DecideMeasureNumber(XElement part, Measure measure)
-        {
-            if (!part.Elements("measure").Any())
-                return 1;
-            else
-                return int.Parse(part.Elements("measure")?.Last()?.Attribute("number")?.Value) + 1;
-        }
+
         public void AppendNote(Note note, string measureNum = "-1", string partname = "P1")
         {
             var part = doc.Descendants("part").FirstOrDefault(p => p.Attribute("id")?.Value == partname) ?? throw new NullReferenceException("There are no parts yet in this score!");
@@ -44,19 +43,29 @@ namespace AnalyzerService
             measure.Add(serNote);
         }
 
+        private int DecideMeasureNumber(XElement part)
+        {
+            if (!part.Elements("measure").Any())
+                return 1;
+            else
+                return int.Parse(part.Elements("measure")?.Last()?.Attribute("number")?.Value) + 1;
+        }
+
         private XElement SerializeMeasure(Measure measure)
         {
             //attributes
-            var res = new XElement("measure",
-                new XAttribute("number", measure.Number),
-                SerializeMAttributes(measure.MAttributes));
+            XElement res = new("measure",
+                                    new XAttribute("number", measure.Number),
+                                    SerializeMAttributes(measure.MAttributes)
+                               );
 
             //notes
-            foreach (var note in measure.Notes)
+            foreach (Note note in measure.Notes)
                 res.Add(SerializeNote(note));
 
             return res;
         }
+
         private XElement SerializeMAttributes(MeasureAttributes attributes)
         {
             return new XElement("attributes",
@@ -70,6 +79,7 @@ namespace AnalyzerService
                 new XElement("staves", attributes.Staves));
 
         }
+
         private XElement SerializeNote(Note note)
         {
             return new XElement("note",
@@ -79,6 +89,7 @@ namespace AnalyzerService
                 new XElement("duration", note.Duration),
                 new XElement("type", note.Type));
         }
+
         public void SaveXML(string path)
         {
             doc.Save(path);

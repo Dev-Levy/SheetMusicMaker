@@ -16,10 +16,10 @@ namespace AnalyzerService
             Console.WriteLine("Analyzing tempo! (Analyzer service)");
             TempoClass tempo = AnalyzeTempo(url);
 
-            Console.WriteLine("Calculating note! (Analyzer service)");
+            Console.WriteLine("Calculating note names for frames! (Analyzer service)");
             Array.ForEach(frames, f => f.Note = FrequencyToNoteName(f.Pitch));
 
-            Console.WriteLine("Calculating intervals! (Analyzer service)");
+            Console.WriteLine("Calculating intervals of same notenames! (Analyzer service)");
             List<NoteIntervals> intervals = AggregateFrames(frames);
 
             Console.WriteLine();

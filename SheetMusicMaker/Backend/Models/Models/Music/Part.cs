@@ -4,8 +4,14 @@ namespace Models.Music
 {
     public class Part
     {
-        public required string Id { get; set; }
-        public required List<Measure> Measures { get; set; } = new List<Measure>();
+        public string Id { get; set; }
+        public List<Measure> Measures { get; set; }
+
+        public Part(string Id)
+        {
+            this.Id = Id;
+            Measures = [];
+        }
 
         public void AddMeasure(Measure measure)
         {
