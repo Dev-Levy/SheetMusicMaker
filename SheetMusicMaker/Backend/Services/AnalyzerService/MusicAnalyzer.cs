@@ -6,6 +6,7 @@ namespace AnalyzerService
 {
     public class MusicAnalyzer
     {
+        private static readonly int SHORTEST_NOTE = 32;
         public static List<Note> MakeNotes(string url)
         {
             InstallPackages();
@@ -69,7 +70,6 @@ namespace AnalyzerService
             };
             return result;
         }
-
 
         private static Frame[] AnalyzePitch(string audioPath)
         {

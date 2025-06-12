@@ -7,8 +7,10 @@ namespace AnalyzerService
     {
         public static void MakeXML(Recording recording, string outputPath)
         {
+            XmlExporter exporter = new();
+
             List<Note> notes = MusicAnalyzer.MakeNotes(recording.Url);
-            Measure[] measures = new Measure[notes.Count / 4]; //somehow i gitta get this beats
+            Measure[] measures = new Measure[notes.Count / 4]; //somehow i gotta get this beats
 
             for (int i = 0; i < measures.Length; i++)
                 measures[i] = new Measure();
@@ -17,8 +19,6 @@ namespace AnalyzerService
 
             for (int i = 0; i < notes.Count; i++)
                 measures[i / beats].AddNote(notes[i]);
-
-            XmlExporter exporter = new();
 
             for (int i = 0; i < measures.Length; i++)
                 exporter.AppendMeasure(measures[i]);
