@@ -1,27 +1,28 @@
 <script lang="ts">
-  import CardZone from "./lib/Uploads/CardZone.svelte";
-  import AnalyzeZone from "./lib/Analyze/AnalyzeZone.svelte";
-  import ExportZone from "./lib/Export/ExportZone.svelte";
-  
+    import UploadsZone from "./lib/UploadsZone.svelte";
+    import AnalyzeZone from "./lib/AnalyzeZone.svelte";
+    import ExportZone from "./lib/ExportZone.svelte";
 </script>
 
 <main>
-  <CardZone/>
-  <AnalyzeZone/>
-  <ExportZone/>
+    <UploadsZone />
+    <AnalyzeZone />
+    <ExportZone />
 </main>
 
 <style>
-  main{
-    display: flex;
-    flex-direction:row;
-    align-items: center;
-    justify-content: space-evenly;
-    width: 80%;
-    height: 100%;
-  }
+    main {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-evenly;
+        width: 1800px;
+        height: 600px;
+    }
 
-  /* :global(*){
-    border: red, solid, 1px;
-  } */
+    :global(*) {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 </style>
