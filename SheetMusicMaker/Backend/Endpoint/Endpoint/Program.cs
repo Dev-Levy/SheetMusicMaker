@@ -2,10 +2,7 @@ using BusinessLogic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Models;
 using Repository;
-using Repository.Generics;
-using Repository.ModelRepos;
 
 namespace Endpoint
 {
@@ -21,9 +18,8 @@ namespace Endpoint
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddTransient<SheetMusicMakerDBContext>();
-            builder.Services.AddTransient<IRepository<Recording>, RecordingRepository>();
-            builder.Services.AddTransient<IRepository<Pdf>, PdfRepository>();
-            builder.Services.AddTransient<ILogic, Logic>();
+            builder.Services.AddTransient<IFileRepository, FileRepository>();
+            builder.Services.AddTransient<IBusinessLogic, BusinessLogic.BusinessLogic>();
 
             var app = builder.Build();
 

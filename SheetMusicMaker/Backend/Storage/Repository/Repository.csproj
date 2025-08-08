@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="MusicAppDB.mdf" />
+    <None Remove="MusicAppDB_log.ldf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="MusicAppDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

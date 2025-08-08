@@ -1,13 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using System;
+using System.Linq;
 
 namespace Repository
 {
     public class SheetMusicMakerDBContext : DbContext
     {
-        public DbSet<Recording> Recordings { get; set; }
-        public DbSet<Pdf> SheetsOfMusic { get; set; }
+        public IQueryable<MediaFile> AudioFiles => MediaFiles.Where(f => f.MediaType == "Audio");
+        public IQueryable<MediaFile> PdfFiles => MediaFiles.Where(f => f.MediaType == "Pdf");
 
+        public DbSet<MediaFile> MediaFiles { get; set; }
         public SheetMusicMakerDBContext()
         {
             Database.EnsureCreated();
@@ -25,20 +28,30 @@ namespace Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Pdf>().HasData(
-                new Pdf()
+            modelBuilder.Entity<MediaFile>().HasData(
+                new MediaFile()
                 {
                     Id = 1,
                     Name = "BENIKE.pdf",
-                    Url = "C:\\Users\\horga\\Documents\\Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf",
-                    CreatedAt = new System.DateTime(2003, 10, 12)
+                    FilePath = "C:\\Users\\horga\\Documents\\Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf",
+                    UploadDate = new DateTime(2003, 10, 12),
+                    MediaType = "Pdf"
                 },
-                new Pdf()
+                new MediaFile()
                 {
                     Id = 2,
                     Name = "LEVIKE.pdf",
-                    Url = "C:\\Users\\horga\\Documents\\jogviszony.pdf",
-                    CreatedAt = new System.DateTime(2003, 10, 16)
+                    FilePath = "C:\\Users\\horga\\Documents\\jogviszony.pdf",
+                    UploadDate = new DateTime(2003, 10, 16),
+                    MediaType = "Pdf"
+                },
+                new MediaFile()
+                {
+                    Id = 3,
+                    Name = "piano.wav",
+                    FilePath = "C:\\Users\\horga\\Documents\\2_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM\\piano.wav",
+                    UploadDate = new DateTime(2003, 10, 12),
+                    MediaType = "Audio"
                 });
         }
     }
