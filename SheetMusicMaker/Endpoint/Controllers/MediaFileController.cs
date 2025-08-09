@@ -52,6 +52,8 @@ namespace Endpoint.Controllers
 
             //store file
             //return name, path, id
+
+            return Ok();
         }
 
         private static string GetMimeType(string fileName)

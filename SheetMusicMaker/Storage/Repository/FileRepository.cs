@@ -44,7 +44,7 @@ namespace Repository
         }
         public void UpdateFile(MediaFile item)
         {
-            var old = item.MediaType == "Pdf" ? ReadPdfFile(item.Id) : ReadAudioFile(item.Id);
+            var old = item.MediaType == MediaType.Pdf ? ReadPdfFile(item.Id) : ReadAudioFile(item.Id);
             old.Name = item.Name;
             old.FilePath = item.FilePath;
             old.UploadDate = item.UploadDate;

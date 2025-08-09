@@ -12,9 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Models\Models\Models.csproj" />
-    <ProjectReference Include="..\..\Services\BusinessLogic\BusinessLogic.csproj" />
-    <ProjectReference Include="..\..\Storage\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\Services\BusinessLogic\BusinessLogic.csproj" />
   </ItemGroup>
 
 </Project>
