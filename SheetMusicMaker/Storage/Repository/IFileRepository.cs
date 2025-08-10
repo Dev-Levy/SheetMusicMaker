@@ -1,11 +1,13 @@
 ﻿using Models;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Repository
 {
     public interface IFileRepository
     {
-        void CreateFile(MediaFile item);
+        Task CreateFile(MediaFile file, Stream data);
         void DeleteAudioFile(int id);
         void DeletePdfFile(int id);
         IQueryable<MediaFile> ReadAllAudioFile();

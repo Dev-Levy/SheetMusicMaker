@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Endpoint.Controllers
             MediaFile file = logic.ReadAudioFile(id);
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
-            string mimeType = GetMimeType(file.Name);
+            string mimeType = GetMimeType(file.FileName);
 
             return File(fileBytes, mimeType);
         }
@@ -41,19 +42,41 @@ namespace Endpoint.Controllers
             return NoContent();
         }
 
-        [HttpPost]
+        [HttpPost(audio)]
         public async Task<IActionResult> UploadAudioAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            using Stream stream = file.OpenReadStream();
-            logic.UploadFile(stream, file.FileName);
+            MediaFile mediaFile = new()
+            {
+                FileName = file.FileName,
+                UploadDate = DateTime.Now,
+                MediaType = MediaType.Audio
+            };
 
-            //store file
-            //return name, path, id
+            await using Stream stream = file.OpenReadStream();
+            await logic.UploadFile(mediaFile, stream);
 
-            return Ok();
+            return Ok("Audio file uploaded successfully!");
+        }
+
+        [HttpGet("analyze/{id}")]
+        public IActionResult AnalyzeAudioFile(int id)
+        {
+            MediaFile audioFile = logic.ReadAudioFile(id);
+
+            //analyze the audio
+            //create pdf
+
+            int idForCreatedPdf = 1;
+
+            MediaFile pdfFile = logic.ReadPdfFile(idForCreatedPdf);
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(pdfFile.FilePath);
+            string mimeType = GetMimeType(pdfFile.FileName);
+
+            return File(fileBytes, mimeType, pdfFile.FileName);
         }
 
         private static string GetMimeType(string fileName)
@@ -65,6 +88,8 @@ namespace Endpoint.Controllers
                 ".mp3" => "audio/mpeg",
                 ".wav" => "audio/wav",
                 ".ogg" => "audio/ogg",
+                ".pdf" => "application/pdf",
+                ".json" => "application/json",
                 _ => "application/octet-stream"
             };
         }

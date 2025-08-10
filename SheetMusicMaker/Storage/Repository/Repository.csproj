@@ -9,6 +9,17 @@
   <ItemGroup>
     <None Remove="MusicAppDB.mdf" />
     <None Remove="MusicAppDB_log.ldf" />
+    <None Remove="MyDB.mdf" />
+    <None Remove="MyDB_log.ldf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MyDB.mdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MyDB_log.ldf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

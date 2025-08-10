@@ -1,14 +1,16 @@
 ﻿using Models;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
     public interface IBusinessLogic
     {
-        void DeleteAudioFile(int id);
         IQueryable<MediaFile> ReadAllAudioFiles();
         MediaFile ReadAudioFile(int id);
-        void UploadFile(Stream audioStream, string filename);
+        void DeleteAudioFile(int id);
+        Task UploadFile(MediaFile file, Stream stream);
+        MediaFile ReadPdfFile(int id);
     }
 }

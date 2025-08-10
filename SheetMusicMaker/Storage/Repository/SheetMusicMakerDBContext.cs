@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Repository
@@ -32,25 +33,17 @@ namespace Repository
                 new MediaFile()
                 {
                     Id = 1,
-                    Name = "BENIKE.pdf",
-                    FilePath = "C:\\Users\\horga\\Documents\\Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf",
-                    UploadDate = new DateTime(2003, 10, 12),
+                    FileName = "Test.pdf",
+                    FilePath = Path.Combine(Config.UPLOAD_DIR, "Test.pdf"),
+                    UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Pdf
                 },
                 new MediaFile()
                 {
                     Id = 2,
-                    Name = "LEVIKE.pdf",
-                    FilePath = "C:\\Users\\horga\\Documents\\jogviszony.pdf",
-                    UploadDate = new DateTime(2003, 10, 16),
-                    MediaType = MediaType.Pdf
-                },
-                new MediaFile()
-                {
-                    Id = 3,
-                    Name = "piano.wav",
-                    FilePath = "C:\\Users\\horga\\Documents\\2_PROJEKTMUNKA\\UPLOAD_FOLDER_SMM\\piano.wav",
-                    UploadDate = new DateTime(2003, 10, 12),
+                    FileName = "piano.wav",
+                    FilePath = Path.Combine(Config.UPLOAD_DIR, "piano.wav"),
+                    UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Audio
                 });
         }
