@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.Extensions.Configuration;
+using Models;
 using System;
 using System.IO;
 using System.Linq;
@@ -6,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class FileRepository(SheetMusicMakerDBContext ctx) : IFileRepository
+    public class FileRepository(SheetMusicMakerDBContext ctx, IConfiguration configuration) : IFileRepository
     {
         public async Task CreateFile(MediaFile file, Stream data)
         {
-            string filePath = Path.Combine(Config.UPLOAD_DIR, file.FileName);
+            string uploadDir = configuration["FileStorage:Path"] ?? throw new ArgumentException("Config is faulty!");
 
-            Directory.CreateDirectory(Config.UPLOAD_DIR);
+            string filePath = Path.Combine(uploadDir, file.FileName);
+
+            Directory.CreateDirectory(uploadDir);
             if (data.CanSeek)
                 data.Position = 0;
             await using FileStream fileStream = File.Create(filePath);
@@ -46,22 +49,33 @@ namespace Repository
 
         public void DeleteAudioFile(int id)
         {
-            ctx.Set<MediaFile>().Remove(ReadAudioFile(id));
-            ctx.SaveChanges();
+            MediaFile file = ReadAudioFile(id);
+            DeleteFromDbAndFileSys(file);
         }
 
         public void DeletePdfFile(int id)
         {
-            ctx.Set<MediaFile>().Remove(ReadPdfFile(id));
+            MediaFile file = ReadPdfFile(id);
+            DeleteFromDbAndFileSys(file);
+        }
+
+        private void DeleteFromDbAndFileSys(MediaFile file)
+        {
+            if (File.Exists(file.FilePath))
+            {
+                File.Delete(file.FilePath);
+            }
+            ctx.Set<MediaFile>().Remove(file);
             ctx.SaveChanges();
         }
 
         public void UpdateFile(MediaFile item)
         {
-            var old = item.MediaType == MediaType.Pdf ? ReadPdfFile(item.Id) : ReadAudioFile(item.Id);
+            MediaFile old = item.MediaType == MediaType.Pdf ? ReadPdfFile(item.Id) : ReadAudioFile(item.Id);
             old.FileName = item.FileName;
             old.FilePath = item.FilePath;
             old.UploadDate = item.UploadDate;
         }
+
     }
 }

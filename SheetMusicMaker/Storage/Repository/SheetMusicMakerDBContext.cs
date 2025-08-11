@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace Repository
@@ -12,6 +11,7 @@ namespace Repository
         public IQueryable<MediaFile> PdfFiles => MediaFiles.Where(f => f.MediaType == MediaType.Pdf);
 
         public DbSet<MediaFile> MediaFiles { get; set; }
+
         public SheetMusicMakerDBContext()
         {
             Database.EnsureCreated();
@@ -34,7 +34,7 @@ namespace Repository
                 {
                     Id = 1,
                     FileName = "Test.pdf",
-                    FilePath = Path.Combine(Config.UPLOAD_DIR, "Test.pdf"),
+                    FilePath = "TestData\\Test.pdf",
                     UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Pdf
                 },
@@ -42,7 +42,7 @@ namespace Repository
                 {
                     Id = 2,
                     FileName = "piano.wav",
-                    FilePath = Path.Combine(Config.UPLOAD_DIR, "piano.wav"),
+                    FilePath = "TestData\\piano.wav",
                     UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Audio
                 });

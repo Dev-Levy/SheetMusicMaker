@@ -2,6 +2,7 @@
 using Repository;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace BusinessLogic
@@ -32,5 +33,15 @@ namespace BusinessLogic
         {
             await mediaFileRepo.CreateFile(file, stream);
         }
+
+    }
+
+    public static class AnalyzerLib
+    {
+        [DllImport("AnalyzerService.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double AddNumbers(double a, double b);
+
+        [DllImport("AnalyzerService.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double Hypotenuse(double a, double b);
     }
 }
