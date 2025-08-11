@@ -34,7 +34,7 @@ namespace Endpoint
                          .AllowAnyMethod()
                          .AllowAnyHeader()
                          .WithExposedHeaders("Content-Disposition")
-                         .WithOrigins("http://localhost:5173"));
+                         .WithOrigins(["http://localhost:5173", "https://dev-levy.github.io"]));
 
             app.UseRouting();
             app.MapControllers();
