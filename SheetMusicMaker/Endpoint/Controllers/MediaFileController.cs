@@ -64,14 +64,9 @@ namespace Endpoint.Controllers
         [HttpGet("analyze/{id}")]
         public IActionResult AnalyzeAudioFile(int id)
         {
-            MediaFile audioFile = logic.ReadAudioFile(id);
+            logic.AnalyzeAudioFile(id, out int createdPdfId);
 
-            //analyze the audio
-            //create pdf
-
-            int idForCreatedPdf = 1;
-
-            MediaFile pdfFile = logic.ReadPdfFile(idForCreatedPdf);
+            MediaFile pdfFile = logic.ReadPdfFile(createdPdfId);
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(pdfFile.FilePath);
             string mimeType = GetMimeType(pdfFile.FileName);

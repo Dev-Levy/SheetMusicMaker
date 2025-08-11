@@ -2,13 +2,19 @@
 using Repository;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
     public class BusinessLogic(IFileRepository mediaFileRepo) : IBusinessLogic
     {
+        public void AnalyzeAudioFile(int id, out int createdPdfId)
+        {
+            MediaFile file = ReadAudioFile(id);
+
+            createdPdfId = 1;
+        }
+        #region CRUD
         public IQueryable<MediaFile> ReadAllAudioFiles()
         {
             return mediaFileRepo.ReadAllAudioFile();
@@ -33,15 +39,6 @@ namespace BusinessLogic
         {
             await mediaFileRepo.CreateFile(file, stream);
         }
-
-    }
-
-    public static class AnalyzerLib
-    {
-        [DllImport("AnalyzerService.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern double AddNumbers(double a, double b);
-
-        [DllImport("AnalyzerService.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern double Hypotenuse(double a, double b);
+        #endregion
     }
 }
