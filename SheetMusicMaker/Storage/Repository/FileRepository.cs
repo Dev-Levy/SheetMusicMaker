@@ -11,7 +11,8 @@ namespace Repository
     {
         public async Task CreateFile(MediaFile file, Stream data)
         {
-            string uploadDir = configuration["FileStorage:Path"] ?? throw new ArgumentException("Config is faulty!");
+            string uploadDir = configuration["FileStorage:UploadDir"]
+                ?? throw new ArgumentException("Config is faulty! UploadDir not found!");
 
             string filePath = Path.Combine(uploadDir, file.FileName);
 
@@ -23,8 +24,13 @@ namespace Repository
 
             file.FilePath = filePath;
 
-            ctx.Set<MediaFile>().Add(file);
-            ctx.SaveChanges();
+            await StoreFile(file);
+        }
+
+        public async Task StoreFile(MediaFile file)
+        {
+            await ctx.Set<MediaFile>().AddAsync(file);
+            await ctx.SaveChangesAsync();
         }
 
         public MediaFile ReadAudioFile(int id)

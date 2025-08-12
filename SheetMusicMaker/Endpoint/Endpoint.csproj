@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Remove="TestData\piano.wav" />
     <None Remove="TestData\test.pdf" />
+    <None Remove="TestData\test.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +17,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\test.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\test.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

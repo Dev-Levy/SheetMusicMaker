@@ -62,9 +62,9 @@ namespace Endpoint.Controllers
         }
 
         [HttpGet("analyze/{id}")]
-        public IActionResult AnalyzeAudioFile(int id)
+        public async Task<IActionResult> AnalyzeAudioFile(int id)
         {
-            logic.AnalyzeAudioFile(id, out int createdPdfId);
+            int createdPdfId = await logic.AnalyzeAudioFile(id);
 
             MediaFile pdfFile = logic.ReadPdfFile(createdPdfId);
 

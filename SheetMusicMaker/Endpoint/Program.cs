@@ -1,3 +1,4 @@
+using AnalyzerService;
 using BusinessLogic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ namespace Endpoint
             builder.Services.AddTransient<SheetMusicMakerDBContext>();
             builder.Services.AddTransient<IFileRepository, FileRepository>();
             builder.Services.AddTransient<IBusinessLogic, BusinessLogic.BusinessLogic>();
+            builder.Services.AddTransient<IAudioAnalyzer, AudioAnalyzer>();
 
             WebApplication app = builder.Build();
 

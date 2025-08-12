@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="3.1">
+    <work>
+        <work-title>TheTitle</work-title>
+    </work>
+    <identification>
+        <creator type="composer">TestUser</creator>
+        <encoding>
+            <software>Custom MusicXML Generator</software>
+            <encoding-date>2024-12-27</encoding-date>
+        </encoding>
+    </identification>
+    <part-list>
+        <score-part id="P1">
+            <part-name>Music</part-name>
+        </score-part>
+    </part-list>
+    <part id="P1">
+        <measure number="1">
+            <attributes>
+                <divisions>32</divisions>
+                <key>
+                    <fifths>0</fifths>
+                    <mode>major</mode>
+                </key>
+                <time>
+                    <beats>4</beats>
+                    <beat-type>4</beat-type>
+                </time>
+            </attributes>
+            <note>
+                <pitch>
+                    <step>A</step>
+                    <octave>4</octave>
+                </pitch>
+                <duration>32</duration>
+            </note>
+        </measure>
+        <measure number="2">
+            <attributes>
+                <divisions>32</divisions>
+                <key>
+                    <fifths>0</fifths>
+                    <mode>major</mode>
+                </key>
+                <time>
+                    <beats>4</beats>
+                    <beat-type>4</beat-type>
+                </time>
+            </attributes>
+        </measure>
+        <measure number="3">
+            <attributes>
+                <divisions>32</divisions>
+                <key>
+                    <fifths>0</fifths>
+                    <mode>major</mode>
+                </key>
+                <time>
+                    <beats>4</beats>
+                    <beat-type>4</beat-type>
+                </time>
+            </attributes>
+        </measure>
+        <measure number="4">
+            <attributes>
+                <divisions>32</divisions>
+                <key>
+                    <fifths>0</fifths>
+                    <mode>major</mode>
+                </key>
+                <time>
+                    <beats>4</beats>
+                    <beat-type>4</beat-type>
+                </time>
+            </attributes>
+        </measure>
+        <measure number="5">
+            <attributes>
+                <divisions>32</divisions>
+                <key>
+                    <fifths>0</fifths>
+                    <mode>major</mode>
+                </key>
+                <time>
+                    <beats>4</beats>
+                    <beat-type>4</beat-type>
+                </time>
+            </attributes>
+        </measure>
+    </part>
+</score-partwise>

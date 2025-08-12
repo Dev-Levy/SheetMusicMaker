@@ -8,6 +8,8 @@ namespace Repository
     public interface IFileRepository
     {
         Task CreateFile(MediaFile file, Stream data);
+        Task StoreFile(MediaFile file);
+
         void DeleteAudioFile(int id);
         void DeletePdfFile(int id);
         IQueryable<MediaFile> ReadAllAudioFile();
