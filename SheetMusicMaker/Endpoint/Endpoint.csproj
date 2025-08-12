@@ -7,19 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TestData\piano.wav" />
-    <None Remove="TestData\test.pdf" />
-    <None Remove="TestData\test.xml" />
+    <None Remove="Data\piano.wav" />
+    <None Remove="Data\test.pdf" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="TestData\piano.wav">
+    <Content Include="Data\piano.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\test.pdf">
+    <Content Include="Data\test.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\test.xml">
+    <Content Include="Data\template.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

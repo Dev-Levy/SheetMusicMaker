@@ -36,7 +36,7 @@ namespace Repository
                 {
                     Id = 1,
                     FileName = "Test.pdf",
-                    FilePath = Path.Combine(BASE_DIR, "TestData\\Test.pdf"),
+                    FilePath = Path.Combine(BASE_DIR, "Data\\Test.pdf"),
                     UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Pdf
                 },
@@ -44,7 +44,7 @@ namespace Repository
                 {
                     Id = 2,
                     FileName = "piano.wav",
-                    FilePath = Path.Combine(BASE_DIR, "TestData\\piano.wav"),
+                    FilePath = Path.Combine(BASE_DIR, "Data\\piano.wav"),
                     UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Audio
                 });

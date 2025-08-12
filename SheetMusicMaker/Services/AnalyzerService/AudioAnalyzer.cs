@@ -1,24 +1,37 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Models;
+using MusicXmlConfiguringService;
 using System.Diagnostics;
 
 namespace AnalyzerService
 {
     public class AudioAnalyzer(IConfiguration configuration) : IAudioAnalyzer
     {
-        public string AnalyzeAndCreateXML(MediaFile file)
+        public string AnalyzeAndCreateXML(MediaFile audioFile)
         {
+            IMusicXmlConfigurator xmlConfigutator = new MusicXmlConfigurator(configuration);
+
+            string outputDir = configuration["FileStorage:CreatedDir"] ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
+            Directory.CreateDirectory(outputDir);
+
+            string xmlName = Path.ChangeExtension(audioFile.FileName, ".xml");
+            string xmlPath = Path.Combine(outputDir, xmlName);
+
+            //                                                                      DONE
             //read samples -> framing -> windowing -> FFT -> convert to notes -> create XML
             //this needs cpp calls
-            return Path.Combine(AppContext.BaseDirectory, "TestData\\test.xml");
+
+
+            xmlConfigutator.SetTitle(Path.GetFileNameWithoutExtension(xmlName));
+            xmlConfigutator.SetComposer("Oláh Levente");
+            xmlConfigutator.Save(xmlPath);
+            return xmlPath;
         }
 
         public async Task<string> ConvertXmlToPdfAsync(string xmlPath)
         {
-            string musescorePath = configuration["MuseScorePath"]
-                ?? throw new ArgumentException("Config is faulty! MuseScorePath not found!");
-            string outputDir = configuration["FileStorage:CreatedDir"]
-                ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
+            string musescorePath = configuration["MuseScorePath"] ?? throw new ArgumentException("Config is faulty! MuseScorePath not found!");
+            string outputDir = configuration["FileStorage:CreatedDir"] ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
             Directory.CreateDirectory(outputDir);
 
             string pdfName = Path.ChangeExtension(Path.GetFileName(xmlPath), ".pdf");
