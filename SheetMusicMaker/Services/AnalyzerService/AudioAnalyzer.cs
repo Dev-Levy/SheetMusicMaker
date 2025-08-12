@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Models;
-using MusicXmlConfiguringService;
+using Models.MusicXml;
+using MusicXmlService;
 using System.Diagnostics;
 
 namespace AnalyzerService
@@ -21,9 +22,17 @@ namespace AnalyzerService
             //read samples -> framing -> windowing -> FFT -> convert to notes -> create XML
             //this needs cpp calls
 
+            Note[] notes = [
+                new Note("A4", NoteType.Quarter),
+                new Note("G4", NoteType.Quarter),
+                new Note("F4", NoteType.Quarter),
+            ];
 
             xmlConfigutator.SetTitle(Path.GetFileNameWithoutExtension(xmlName));
             xmlConfigutator.SetComposer("Oláh Levente");
+
+            xmlConfigutator.AddNotes(notes);
+
             xmlConfigutator.Save(xmlPath);
             return xmlPath;
         }
