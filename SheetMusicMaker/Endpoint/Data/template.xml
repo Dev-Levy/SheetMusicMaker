@@ -19,7 +19,7 @@
     <part id="P1">
         <measure number="1">
             <attributes>
-                <divisions>32</divisions>
+                <divisions>8</divisions>
                 <key>
                     <fifths>0</fifths>
                     <mode>major</mode>
@@ -34,60 +34,8 @@
                     <step>A</step>
                     <octave>4</octave>
                 </pitch>
-                <duration>32</duration>
+                <duration>8</duration>
             </note>
-        </measure>
-        <measure number="2">
-            <attributes>
-                <divisions>32</divisions>
-                <key>
-                    <fifths>0</fifths>
-                    <mode>major</mode>
-                </key>
-                <time>
-                    <beats>4</beats>
-                    <beat-type>4</beat-type>
-                </time>
-            </attributes>
-        </measure>
-        <measure number="3">
-            <attributes>
-                <divisions>32</divisions>
-                <key>
-                    <fifths>0</fifths>
-                    <mode>major</mode>
-                </key>
-                <time>
-                    <beats>4</beats>
-                    <beat-type>4</beat-type>
-                </time>
-            </attributes>
-        </measure>
-        <measure number="4">
-            <attributes>
-                <divisions>32</divisions>
-                <key>
-                    <fifths>0</fifths>
-                    <mode>major</mode>
-                </key>
-                <time>
-                    <beats>4</beats>
-                    <beat-type>4</beat-type>
-                </time>
-            </attributes>
-        </measure>
-        <measure number="5">
-            <attributes>
-                <divisions>32</divisions>
-                <key>
-                    <fifths>0</fifths>
-                    <mode>major</mode>
-                </key>
-                <time>
-                    <beats>4</beats>
-                    <beat-type>4</beat-type>
-                </time>
-            </attributes>
         </measure>
     </part>
 </score-partwise>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Models.MusicXml;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace MusicXmlService
 {
@@ -34,28 +36,43 @@ namespace MusicXmlService
 
         public void AddNotes(Note[] notes)
         {
+            XElement part = doc.Descendants("part").FirstOrDefault() ?? throw new InvalidOperationException("No <part> element found.");
+
             foreach (Note note in notes)
             {
-                AddNote(note);
+                bool fitsInLastMeasure = WillNoteFitInLastMeasure(part, note);
+                if (fitsInLastMeasure)
+                {
+                    XElement lastMeasure = part.Elements("measure").LastOrDefault() ?? throw new InvalidOperationException($"No measures found.");
+                    lastMeasure.Add(ConvertNoteToXml(note));
+                }
+                else
+                {
+                    AddMeasure(part);
+                    XElement lastMeasure = part.Elements("measure").LastOrDefault() ?? throw new InvalidOperationException($"No measures found.");
+                    lastMeasure.Add(ConvertNoteToXml(note));
+                }
+                //if it fits in the last it should be placed there
+                //else new measure is needed and it should be placed there;
             }
         }
 
-        private void AddNote(Note note)
+        private bool WillNoteFitInLastMeasure(XElement part, Note note)
         {
-            XElement part = doc.Descendants("part").FirstOrDefault() ?? throw new InvalidOperationException("No <part> element found.");
-            bool fitsInLastMeasure = false;
-            if (fitsInLastMeasure)
-            {
+            XmlSerializer serializer = new(typeof(Measure));
 
-            }
-            //if it fits in the last it should be placed there
-            //else new measure is needed and it should be placed there
+            XElement lastMeasure = part.Elements("measure").LastOrDefault() ?? throw new InvalidOperationException($"No measures found.");
+            using XmlReader reader = lastMeasure.CreateReader();
+            Measure measure = (Measure)serializer.Deserialize(reader);
+
+            int totalDivisionsPerMeasure = (int)(divisions * measure.Attributes.Time.Beats * (4.0 / measure.Attributes.Time.BeatType));
+            int sumDivisionsUsedInLastMeasure = measure.Notes.Sum(note => note.Duration);
+
+            return sumDivisionsUsedInLastMeasure + note.Duration <= totalDivisionsPerMeasure;
         }
 
-        private void AddMeasure()
+        private void AddMeasure(XElement part)
         {
-            XElement part = doc.Descendants("part").FirstOrDefault() ?? throw new InvalidOperationException("No <part> element found.");
-
             int measureNumber = GetLastMeasureNumber() + 1;
 
             var newMeasure = new XElement("measure",
@@ -88,26 +105,16 @@ namespace MusicXmlService
 
         private XElement ConvertNoteToXml(Note note)
         {
-            int duration = note.Duration switch
-            {
-                NoteType.Whole => divisions * 32,
-                NoteType.Half => divisions * 16,
-                NoteType.Quarter => divisions * 8,
-                NoteType.Eight => divisions * 4,
-                NoteType.Sixteenth => divisions * 2,
-                NoteType.Thirtysecond => divisions,
-                _ => throw new NotImplementedException()
-            };
-
             XElement xNote = new("note",
                 new XElement("pitch",
-                    new XElement("step", note.Step),
-                    new XElement("octave", note.Octave)
+                    new XElement("step", note.Pitch.Step),
+                    new XElement("octave", note.Pitch.Octave)
                 ),
-                new XElement("duration", duration)
+                new XElement("duration", note.Duration)
             );
             return xNote;
         }
+
         public void Save(string outputPath)
         {
             doc.Save(outputPath);

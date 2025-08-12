@@ -23,9 +23,10 @@ namespace AnalyzerService
             //this needs cpp calls
 
             Note[] notes = [
-                new Note("A4", NoteType.Quarter),
-                new Note("G4", NoteType.Quarter),
-                new Note("F4", NoteType.Quarter),
+                new Note{ Pitch = new Pitch{Step = "B", Octave = 4}, Duration = 12},
+                new Note{ Pitch = new Pitch{Step = "A", Octave = 4}, Duration = 2},
+                new Note{ Pitch = new Pitch{Step = "G", Octave = 4}, Duration = 16},
+                new Note{ Pitch = new Pitch{Step = "E", Octave = 4}, Duration = 8},
             ];
 
             xmlConfigutator.SetTitle(Path.GetFileNameWithoutExtension(xmlName));
