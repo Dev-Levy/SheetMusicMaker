@@ -1,9 +1,12 @@
 using AnalyzerService;
 using BusinessLogic;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Repository;
+using System;
+using System.IO;
 
 namespace Endpoint
 {
@@ -12,6 +15,7 @@ namespace Endpoint
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            ResetDirectories(builder);
 
             builder.Services.AddControllers();
 
@@ -41,8 +45,23 @@ namespace Endpoint
             app.UseRouting();
             app.MapControllers();
 
-            app.Run();
+            app.MapGet("/health", () => Results.Ok());
 
+            app.Run();
+        }
+
+        private static void ResetDirectories(WebApplicationBuilder builder)
+        {
+            string uploadPath = builder.Configuration["FileStorage:UploadDir"] ?? throw new ArgumentException("Config is faulty! UploadDir not found!");
+            string createPath = builder.Configuration["FileStorage:CreatedDir"] ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
+
+            if (Directory.Exists(uploadPath))
+                Directory.Delete(uploadPath, recursive: true);
+            Directory.CreateDirectory(uploadPath);
+
+            if (Directory.Exists(createPath))
+                Directory.Delete(createPath, recursive: true);
+            Directory.CreateDirectory(createPath);
         }
     }
 }
