@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicXmlService", "Services\MusicXmlService\MusicXmlService.csproj", "{35CF9131-BE60-EDE5-C22A-9280067BC117}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioAnalyzerNativeCpp", "Services\AudioAnalyzerNativeCpp\AudioAnalyzerNativeCpp.vcxproj", "{98A33C3D-D6A6-4FE8-8068-9065A0811021}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,18 @@ Global
 		{35CF9131-BE60-EDE5-C22A-9280067BC117}.Release|x64.Build.0 = Release|Any CPU
 		{35CF9131-BE60-EDE5-C22A-9280067BC117}.Release|x86.ActiveCfg = Release|Any CPU
 		{35CF9131-BE60-EDE5-C22A-9280067BC117}.Release|x86.Build.0 = Release|Any CPU
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|Any CPU.Build.0 = Debug|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|x64.ActiveCfg = Debug|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|x64.Build.0 = Debug|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|x86.ActiveCfg = Debug|Win32
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Debug|x86.Build.0 = Debug|Win32
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|Any CPU.ActiveCfg = Release|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|Any CPU.Build.0 = Release|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|x64.ActiveCfg = Release|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|x64.Build.0 = Release|x64
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|x86.ActiveCfg = Release|Win32
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +135,7 @@ Global
 		{D89C3B24-AA03-9C27-E2AA-027FB915399A} = {A091951F-37CC-4AB6-A779-3614CFAD57AD}
 		{8ADFFD56-AE8D-4512-8F60-5B41EF4C18BB} = {A091951F-37CC-4AB6-A779-3614CFAD57AD}
 		{35CF9131-BE60-EDE5-C22A-9280067BC117} = {A091951F-37CC-4AB6-A779-3614CFAD57AD}
+		{98A33C3D-D6A6-4FE8-8068-9065A0811021} = {A091951F-37CC-4AB6-A779-3614CFAD57AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {542D5192-965E-43AA-A321-6491CAC92899}
