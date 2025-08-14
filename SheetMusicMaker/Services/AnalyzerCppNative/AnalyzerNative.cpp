@@ -5,7 +5,7 @@
 #include <kissfft/kiss_fft.h>
 #include <kissfft/kiss_fftr.h>
 
-#include "AudioNative.hpp"
+#include "AnalyzerNative.hpp"
 
 #include <numbers>
 #include <cmath>

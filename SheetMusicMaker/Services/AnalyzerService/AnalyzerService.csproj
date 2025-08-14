@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Models\Models.csproj" />
+    <ProjectReference Include="..\AnalyzerCppWrapper\AnalyzerCppWrapper.vcxproj" />
     <ProjectReference Include="..\MusicXmlService\MusicXmlService.csproj" />
   </ItemGroup>
 
