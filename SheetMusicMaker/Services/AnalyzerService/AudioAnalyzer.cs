@@ -22,7 +22,7 @@ namespace AnalyzerService
             string xmlName = Path.ChangeExtension(audioFile.FileName, ".xml");
             string xmlPath = Path.Combine(outputDir, xmlName);
 
-            List<List<double>> frames = Analyzer.AnalyzeFile(audioFile.FilePath, 1024, 512);
+            List<List<double>> frames = NativeAnalyzer.Analyze(audioFile.FilePath, configuration);
             foreach (var frame in frames)
                 Console.WriteLine(string.Join(", ", frame));
             //                                                                      DONE

@@ -1,9 +1,14 @@
+// AnalyzerNative.hpp
 #pragma once
-#include <vector>
-#include <string>
 
-struct FrameSpectrum {
-	std::vector<double> magnitudes; // frequency bins for one frame
-};
+#ifdef ANALYZERNATIVE_EXPORTS
+#  define ANALYZERNATIVE_API __declspec(dllexport)
+#else
+#  define ANALYZERNATIVE_API __declspec(dllimport)
+#endif
 
-std::vector<FrameSpectrum> AnalyzeAudioFile(const std::string& filepath, int frameSize = 1024, int hopSize = 512);
+extern "C" ANALYZERNATIVE_API int __cdecl AnalyzeAudioFile(
+	const char* inputPath,
+	int frameSize,
+	int hopSize,
+	const char* outputPath);

@@ -5,12 +5,20 @@
 #include <miniaudio.h>
 #include <kissfft/kiss_fft.h>
 #include <kissfft/kiss_fftr.h>
-
 #include "AnalyzerNative.hpp"
 
+#include <string>
+#include <vector>
 #include <numbers>
 #include <cmath>
+#include <fstream>
 #include <stdexcept>
+
+#include <iostream>
+
+struct FrameSpectrum {
+	std::vector<double> magnitudes;
+};
 
 static std::vector<double> hannWindow(int size) {
 	std::vector<double> window(size);
@@ -19,33 +27,43 @@ static std::vector<double> hannWindow(int size) {
 	return window;
 }
 
-std::vector<FrameSpectrum> AnalyzeAudioFile(const std::string& filepath, int frameSize, int hopSize)
+static std::vector<FrameSpectrum> DoAnalysis(const std::string& filepath, int frameSize, int hopSize)
 {
-	// Step 1: Load audio samples
+	// Load audio samples
 	ma_decoder decoder;
 	if (ma_decoder_init_file(filepath.c_str(), NULL, &decoder) != MA_SUCCESS)
 		throw std::runtime_error("Failed to load audio file");
 
-	std::vector<float> pcm;
-	{
-		ma_uint64 totalFrames = 0;
-		ma_decoder_get_length_in_pcm_frames(&decoder, &totalFrames);
-		pcm.resize(totalFrames * decoder.outputChannels);
-		ma_decoder_read_pcm_frames(&decoder, pcm.data(), totalFrames, NULL);
-	}
+	std::cout << "FILE LOADED!!!" << std::endl;
+
+	ma_uint64 totalFrames = 0;
+	ma_uint64 framesRead = 0;
+
+	std::vector<float> pcm(static_cast<size_t>(totalFrames) * decoder.outputChannels);
+
+	ma_decoder_get_length_in_pcm_frames(&decoder, &totalFrames);
+	ma_result r = ma_decoder_read_pcm_frames(&decoder, pcm.data(), totalFrames, &framesRead);
+	if (r != MA_SUCCESS)
+		throw std::runtime_error("Failed to read PCM frames");
+
 	ma_decoder_uninit(&decoder);
 
-	// Convert to mono if needed
+	std::cout << "SAMPLES LOADED!!!" << std::endl;
+
+	// Convert to mono
 	std::vector<double> samples;
-	samples.reserve(pcm.size() / decoder.outputChannels);
-	for (size_t i = 0; i < pcm.size(); i += decoder.outputChannels) {
+	samples.reserve(static_cast<size_t>(framesRead));
+
+	for (ma_uint64 f = 0; f < framesRead; ++f) {
 		double sum = 0.0;
 		for (int ch = 0; ch < decoder.outputChannels; ++ch)
-			sum += pcm[i + ch];
+			sum += pcm[static_cast<size_t>(f) * decoder.outputChannels + ch];
 		samples.push_back(sum / decoder.outputChannels);
 	}
 
-	// Step 2: Framing + Windowing
+	std::cout << "MONO CONVERSION DONE!!!" << std::endl;
+
+	// Framing + Windowing
 	auto window = hannWindow(frameSize);
 	std::vector<FrameSpectrum> allFrames;
 
@@ -56,14 +74,14 @@ std::vector<FrameSpectrum> AnalyzeAudioFile(const std::string& filepath, int fra
 		std::vector<kiss_fft_cpx> out(frameSize);
 
 		for (int n = 0; n < frameSize; n++) {
-			in[n].r = samples[start + n] * window[n];
+			in[n].r = static_cast<float>(samples[start + n] * window[n]);
 			in[n].i = 0.0;
 		}
 
-		// Step 3: FFT
+		// FFT
 		kiss_fft(cfg, in.data(), out.data());
 
-		// Step 4: Convert to magnitude spectrum
+		// Convert to magnitude spectrum
 		FrameSpectrum spectrum;
 		spectrum.magnitudes.resize(frameSize / 2);
 		for (int k = 0; k < frameSize / 2; k++) {
@@ -75,4 +93,43 @@ std::vector<FrameSpectrum> AnalyzeAudioFile(const std::string& filepath, int fra
 
 	free(cfg);
 	return allFrames;
+}
+
+int __cdecl AnalyzeAudioFile(const char* inputPath, int frameSize, int hopSize, const char* outputPath)
+{
+	try {
+		if (!inputPath || !outputPath) return 3;						// null pointer
+		if (frameSize <= 0 || (frameSize & (frameSize - 1))) return 4;	// require power-of-two
+		if (hopSize <= 0 || hopSize > frameSize) return 5;
+
+		auto frames = DoAnalysis(inputPath, frameSize, hopSize);
+
+		std::ofstream out(outputPath);
+		if (!out.is_open()) {
+			return 2;
+		}
+
+		for (size_t i = 0; i < frames.size(); i++) {
+
+			for (size_t j = 0; j < frames[i].magnitudes.size(); j++) {
+				out << frames[i].magnitudes[j];
+
+				if (j + 1 < frames[i].magnitudes.size())
+					out << ";";
+			}
+			out << std::endl;
+		}
+
+		return 0;
+	}
+	catch (const std::exception& ex) {
+		std::ofstream log("AnalyzerNative.log", std::ios::app);
+		log << "Exception: " << ex.what() << std::endl;
+		return 1;
+	}
+	catch (...) {
+		std::ofstream log("AnalyzerNative.log", std::ios::app);
+		log << "Unknown exception" << std::endl;
+		return 1;
+	}
 }

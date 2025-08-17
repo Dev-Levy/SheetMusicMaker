@@ -4,6 +4,8 @@
 	<TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Models\Models.csproj" />
-    <ProjectReference Include="..\AnalyzerCppWrapper\AnalyzerCppWrapper.vcxproj" />
+    <ProjectReference Include="..\AnalyzerCppNative\AnalyzerCppNative.vcxproj" />
     <ProjectReference Include="..\MusicXmlService\MusicXmlService.csproj" />
   </ItemGroup>
 

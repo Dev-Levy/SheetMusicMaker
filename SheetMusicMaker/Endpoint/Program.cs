@@ -54,6 +54,7 @@ namespace Endpoint
         {
             string uploadPath = builder.Configuration["FileStorage:UploadDir"] ?? throw new ArgumentException("Config is faulty! UploadDir not found!");
             string createPath = builder.Configuration["FileStorage:CreatedDir"] ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
+            string framesPath = builder.Configuration["FileStorage:FramesDir"] ?? throw new ArgumentException("Config is faulty! FramesDir not found!");
 
             if (Directory.Exists(uploadPath))
                 Directory.Delete(uploadPath, recursive: true);
@@ -62,6 +63,10 @@ namespace Endpoint
             if (Directory.Exists(createPath))
                 Directory.Delete(createPath, recursive: true);
             Directory.CreateDirectory(createPath);
+
+            if (Directory.Exists(framesPath))
+                Directory.Delete(framesPath, recursive: true);
+            Directory.CreateDirectory(framesPath);
         }
     }
 }
