@@ -1,4 +1,5 @@
 ﻿using Models;
+using System.Threading.Tasks;
 
 namespace AnalyzerService
 {

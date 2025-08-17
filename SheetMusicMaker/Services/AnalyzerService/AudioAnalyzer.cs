@@ -2,7 +2,11 @@
 using Models;
 using Models.MusicXml;
 using MusicXmlService;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace AnalyzerService
 {
@@ -18,6 +22,9 @@ namespace AnalyzerService
             string xmlName = Path.ChangeExtension(audioFile.FileName, ".xml");
             string xmlPath = Path.Combine(outputDir, xmlName);
 
+            List<List<double>> frames = Analyzer.AnalyzeFile(audioFile.FilePath, 1024, 512);
+            foreach (var frame in frames)
+                Console.WriteLine(string.Join(", ", frame));
             //                                                                      DONE
             //read samples -> framing -> windowing -> FFT -> convert to notes -> create XML
             //this needs cpp calls

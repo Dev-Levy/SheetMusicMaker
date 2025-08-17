@@ -1,6 +1,8 @@
+#define IServiceProvider IServiceProvider_WIN32
 #include "AnalyzerWrapper.h"
 #include "../AnalyzerCppNative/AnalyzerNative.hpp"
 #include <msclr/marshal_cppstd.h>
+#undef IServiceProvider
 
 List<List<double>^>^ Analyzer::AnalyzeFile(String^ filepath, int frameSize, int hopSize)
 {

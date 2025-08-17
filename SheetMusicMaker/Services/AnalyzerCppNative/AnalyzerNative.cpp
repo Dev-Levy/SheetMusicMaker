@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "framework.h"
 
+#define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 #include <kissfft/kiss_fft.h>
 #include <kissfft/kiss_fftr.h>
