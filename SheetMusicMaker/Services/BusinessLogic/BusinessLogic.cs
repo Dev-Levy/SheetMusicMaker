@@ -1,11 +1,11 @@
-﻿using AnalyzerService;
-using Microsoft.Extensions.Configuration;
-using Models;
-using Repository;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AnalyzerService;
+using Microsoft.Extensions.Configuration;
+using Models;
+using Repository;
 
 namespace BusinessLogic
 {
@@ -15,16 +15,11 @@ namespace BusinessLogic
         {
             IAudioAnalyzer analyzer = new AudioAnalyzer(configuration);
 
-            //read audio
             MediaFile file = ReadAudioFile(id);
 
-            //read samples -> framing -> windowing -> FFT -> convert to notes -> create XML
             string xmlPath = analyzer.AnalyzeAndCreateXML(file);
-
-            //generate PDF
             string pdfPath = await analyzer.ConvertXmlToPdfAsync(xmlPath);
 
-            //store PDF
             MediaFile pdfFile = new()
             {
                 FileName = Path.GetFileName(pdfPath),
@@ -34,7 +29,6 @@ namespace BusinessLogic
             };
             await mediaFileRepo.StoreFile(pdfFile);
 
-            //return ID
             return pdfFile.Id;
         }
         #region CRUD

@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using Models;
-using Models.MusicXml;
-using MusicXmlService;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Models;
+using Models.MusicXml;
+using MusicXmlService;
 
 namespace AnalyzerService
 {
@@ -22,12 +22,21 @@ namespace AnalyzerService
             string xmlName = Path.ChangeExtension(audioFile.FileName, ".xml");
             string xmlPath = Path.Combine(outputDir, xmlName);
 
+            //could use aubio
             List<List<double>> frames = NativeAnalyzer.Analyze(audioFile.FilePath, configuration);
             foreach (var frame in frames)
                 Console.WriteLine(string.Join(", ", frame));
-            //                                                                      DONE
+
+            //get the peaks
+            //choose the lowest -> frequency
+
+            //read BPM
+
+            //convert to note
+
+
+            //--------------------CPP part----------------                         DONE
             //read samples -> framing -> windowing -> FFT -> convert to notes -> create XML
-            //this needs cpp calls
 
             Note[] notes = [
                 new Note{ Pitch = new Pitch{Step = "B", Octave = 4}, Duration = 12},

@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
 
 internal static class NativeAnalyzer
 {
@@ -19,8 +19,6 @@ internal static class NativeAnalyzer
     public static List<List<double>> Analyze(string inputFile, IConfiguration config)
     {
         string framesDir = config["FileStorage:FramesDir"] ?? throw new ArgumentException("FramesDir missing");
-        Directory.CreateDirectory(framesDir);
-
         string outputFile = Path.Combine(framesDir, DateTime.Now.ToString("yyyy_MM_dd_HH_mm") + ".csv");
 
         int frameSize = int.Parse(config["FFT:FrameSize"] ?? throw new ArgumentException("FrameSize missing"));
