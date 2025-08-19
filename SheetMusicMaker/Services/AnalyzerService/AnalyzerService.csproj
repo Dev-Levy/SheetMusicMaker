@@ -12,6 +12,7 @@
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.2" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NWaves" Version="0.9.6" />
   </ItemGroup>
 
   <ItemGroup>
