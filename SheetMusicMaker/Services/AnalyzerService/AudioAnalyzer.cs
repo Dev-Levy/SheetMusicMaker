@@ -19,7 +19,7 @@ namespace AnalyzerService
             int frameSize = int.Parse(configuration["FFT:FrameSize"] ?? throw new ArgumentException("FrameSize missing"));
             int hopSize = int.Parse(configuration["FFT:HopSize"] ?? throw new ArgumentException("HopSize missing"));
 
-            float[] window = AudioFunctions.HannWindow(frameSize);
+            float[] hannWindow = AudioFunctions.HannWindow(frameSize);
 
             //read samples
             float[] samples = AudioFunctions.ReadAudioSamples(audioFile.FilePath, out int sampleRate, out int channels);
@@ -38,7 +38,7 @@ namespace AnalyzerService
             foreach (float[] frame in frames)
             {
                 //windowing
-                AudioFunctions.ApplyWindow(frame, window);
+                AudioFunctions.ApplyWindow(frame, hannWindow);
 
                 //FFT
                 Complex[] fft = AudioFunctions.FFT(frame);
@@ -51,7 +51,23 @@ namespace AnalyzerService
                 noteNames.Add(noteName);
             }
 
-            foreach (var noteEvent in AudioFunctions.AggregateNotes(noteNames))
+            int windowSize = 3;
+            var smoothedNotes = new List<string>();
+
+            for (int i = 0; i < noteNames.Count; i++)
+            {
+                int start = Math.Max(0, i - windowSize / 2);
+                int end = Math.Min(noteNames.Count - 1, i + windowSize / 2);
+                var window = noteNames.GetRange(start, end - start + 1);
+                var mostCommonNote = window.GroupBy(n => n)
+                                           .OrderByDescending(g => g.Count())
+                                           .First().Key;
+
+                smoothedNotes.Add(mostCommonNote);
+            }
+
+
+            foreach (var noteEvent in AudioFunctions.AggregateNotes(smoothedNotes))
             {
                 Console.WriteLine($"{noteEvent.Note} - lenght: {noteEvent.Length}");
             }
