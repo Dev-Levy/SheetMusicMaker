@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 
 namespace AnalyzerService
@@ -19,8 +17,6 @@ namespace AnalyzerService
             int frameSize = int.Parse(configuration["FFT:FrameSize"] ?? throw new ArgumentException("FrameSize missing"));
             int hopSize = int.Parse(configuration["FFT:HopSize"] ?? throw new ArgumentException("HopSize missing"));
 
-            float[] hannWindow = AudioFunctions.HannWindow(frameSize);
-
             //read samples
             float[] samples = AudioFunctions.ReadAudioSamples(audioFile.FilePath, out int sampleRate, out int channels);
 
@@ -31,54 +27,23 @@ namespace AnalyzerService
             samples = AudioFunctions.BandPassFilter(samples, sampleRate);
 
             //framing
-            float[][] frames = AudioFunctions.FrameSignal(samples, frameSize, hopSize);
+            float[][] frames = AudioFunctions.FrameSamples(samples, frameSize, hopSize);
 
-            List<string> noteNames = [];
+            float[] fundamentalFreqs = AudioFunctions.RetrieveFundamentalFreqs(frames, frameSize, sampleRate);
 
-            foreach (float[] frame in frames)
-            {
-                //windowing
-                AudioFunctions.ApplyWindow(frame, hannWindow);
+            List<NoteHelper> smoothedNotes = AudioFunctions.ConvertToNotes(fundamentalFreqs);
 
-                //FFT
-                Complex[] fft = AudioFunctions.FFT(frame);
+            foreach (NoteHelper note in smoothedNotes)
+                Console.WriteLine($"{note.Frequency} - ({note.Name})");
 
-                float[] magnitudes = [.. fft.Select(c => (float)c.Magnitude)];
+            List<NoteHelper> noteEvents = AudioFunctions.AggregateNotes(smoothedNotes);
 
-                float freq = AudioFunctions.GetFundamentalFrequencyHPS(magnitudes, sampleRate);
-                string noteName = AudioFunctions.FrequencyToNoteName(freq);
-                Console.WriteLine($"{freq:F4} - ({noteName})");
-                noteNames.Add(noteName);
-            }
+            foreach (NoteHelper noteEvent in noteEvents)
+                Console.WriteLine($"{noteEvent.Name} - lenght: {noteEvent.FramesCount}");
 
-            int windowSize = 3;
-            var smoothedNotes = new List<string>();
+            int bpm = 120; //TODO
 
-            for (int i = 0; i < noteNames.Count; i++)
-            {
-                int start = Math.Max(0, i - windowSize / 2);
-                int end = Math.Min(noteNames.Count - 1, i + windowSize / 2);
-                var window = noteNames.GetRange(start, end - start + 1);
-                var mostCommonNote = window.GroupBy(n => n)
-                                           .OrderByDescending(g => g.Count())
-                                           .First().Key;
-
-                smoothedNotes.Add(mostCommonNote);
-            }
-
-
-            foreach (var noteEvent in AudioFunctions.AggregateNotes(smoothedNotes))
-            {
-                Console.WriteLine($"{noteEvent.Note} - lenght: {noteEvent.Length}");
-            }
-            //készítünk notes[]
-
-            Note[] notes = [
-                new Note{ Pitch = new Pitch{Step = "B", Octave = 4}, Duration = 12},
-                new Note{ Pitch = new Pitch{Step = "A", Octave = 4}, Duration = 2},
-                new Note{ Pitch = new Pitch{Step = "G", Octave = 4}, Duration = 16},
-                new Note{ Pitch = new Pitch{Step = "E", Octave = 4}, Duration = 8},
-            ];
+            Note[] notes = AudioFunctions.CreateNotes(noteEvents, bpm, sampleRate, frameSize);
 
             IMusicXmlConfigurator xmlConfigutator = new MusicXmlConfigurator(configuration);
 

@@ -1,12 +1,21 @@
 ﻿using MathNet.Numerics.IntegralTransforms;
+using Models.MusicXml;
 using NAudio.Dsp;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Complex = System.Numerics.Complex;
 
 namespace AnalyzerService
 {
+    public struct NoteHelper
+    {
+        public float Frequency { get; set; }
+        public string Name { get; set; }
+        public int FramesCount { get; set; }
+    }
+
     public class AudioFunctions
     {
         public static float[] HannWindow(int size)
@@ -72,7 +81,7 @@ namespace AnalyzerService
             return filtered;
         }
 
-        public static float[][] FrameSignal(float[] samples, int frameSize, int hopSize)
+        public static float[][] FrameSamples(float[] samples, int frameSize, int hopSize)
         {
             int frameCount = (samples.Length - frameSize) / hopSize + 1;
             float[][] frames = new float[frameCount][];
@@ -84,6 +93,30 @@ namespace AnalyzerService
             }
 
             return frames;
+        }
+
+        public static float[] RetrieveFundamentalFreqs(float[][] frames, int frameSize, int sampleRate)
+        {
+            List<float> freqs = [];
+
+            float[] hannWindow = HannWindow(frameSize);
+
+            foreach (float[] frame in frames)
+            {
+                //windowing
+                AudioFunctions.ApplyWindow(frame, hannWindow);
+
+                //FFT
+                Complex[] fft = FFT(frame);
+
+                //get magnitudes
+                float[] magnitudes = [.. fft.Select(c => (float)c.Magnitude)];
+
+                //get frequency
+                freqs.Add(GetFundamentalFrequencyHPS(magnitudes, sampleRate));
+            }
+
+            return [.. freqs];
         }
 
         public static Complex[] FFT(float[] frame)
@@ -131,6 +164,31 @@ namespace AnalyzerService
             return (float)peakIndex * sampleRate / N;
         }
 
+        internal static List<NoteHelper> ConvertToNotes(float[] fundamentalFreqs, int windowSize = 5)
+        {
+            List<NoteHelper> notes = [.. fundamentalFreqs.Select(freq => new NoteHelper
+                                            {
+                                                Frequency = freq,
+                                                Name = FrequencyToNoteName(freq),
+                                                FramesCount = 1
+                                            })];
+
+
+            for (int i = 0; i < notes.Count; i++)
+            {
+                int start = Math.Max(0, i - windowSize / 2);
+                int end = Math.Min(notes.Count - 1, i + windowSize / 2);
+                var window = notes.GetRange(start, end - start + 1);
+                NoteHelper mostCommonNote = window.GroupBy(n => n.Name)
+                                           .OrderByDescending(g => g.Count())
+                                           .First() //group
+                                           .First();//element
+
+                notes[i] = mostCommonNote;
+            }
+            return notes;
+        }
+
         public static string FrequencyToNoteName(float freq)
         {
             int midi = (int)Math.Round(69 + 12 * Math.Log(freq / 440.0, 2));
@@ -142,37 +200,54 @@ namespace AnalyzerService
             return $"{noteNames[noteIndex]}{octave}";
         }
 
-        public static List<(string Note, int Length)> AggregateNotes(List<string> notes)
+        public static List<NoteHelper> AggregateNotes(List<NoteHelper> notes)
         {
-            var noteEvents = new List<(string Note, int Length)>();
+            const string UNSET = "unset";
+            List<NoteHelper> noteEvents = [];
 
-            string lastNote = null;
-            int count = 0;
+            NoteHelper lastNote = new() { Name = UNSET };
 
-            foreach (var note in notes)
+            foreach (NoteHelper note in notes)
             {
-                if (note == lastNote)
+                if (note.Name == lastNote.Name)
                 {
-                    count++;
+                    lastNote.FramesCount++;
                 }
                 else
                 {
-                    if (lastNote != null)
+                    if (lastNote.Name != UNSET)
                     {
-                        noteEvents.Add((lastNote, count));
+                        noteEvents.Add((lastNote));
                     }
 
                     lastNote = note;
-                    count = 1;
                 }
             }
 
-            if (lastNote != null)
+            if (lastNote.Name != UNSET)
             {
-                noteEvents.Add((lastNote, count));
+                noteEvents.Add((lastNote));
             }
 
             return noteEvents;
+        }
+
+        internal static Note[] CreateNotes(List<NoteHelper> noteEvents, int bpm, int sampleRate, int frameSize)
+        {
+            double Tframe = frameSize / sampleRate;
+            double tempo = 60 / bpm;
+
+
+
+
+            Note[] notes = [
+                new Note{ Pitch = new Pitch{Step = "B", Octave = 4}, Duration = 12},
+                new Note{ Pitch = new Pitch{Step = "A", Octave = 4}, Duration = 2},
+                new Note{ Pitch = new Pitch{Step = "G", Octave = 4}, Duration = 16},
+                new Note{ Pitch = new Pitch{Step = "E", Octave = 4}, Duration = 8},
+            ];
+
+            return notes;
         }
     }
 }
