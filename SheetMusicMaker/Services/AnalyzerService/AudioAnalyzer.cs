@@ -16,6 +16,7 @@ namespace AnalyzerService
         {
             int frameSize = int.Parse(configuration["FFT:FrameSize"] ?? throw new ArgumentException("FrameSize missing"));
             int hopSize = int.Parse(configuration["FFT:HopSize"] ?? throw new ArgumentException("HopSize missing"));
+            int divisions = int.Parse(configuration["XmlConstants:Divisions"] ?? throw new ArgumentException("Divisions missing"));
 
             //read samples
             float[] samples = AudioFunctions.ReadAudioSamples(audioFile.FilePath, out int sampleRate, out int channels);
@@ -43,7 +44,7 @@ namespace AnalyzerService
 
             int bpm = 120; //TODO
 
-            Note[] notes = AudioFunctions.CreateNotes(noteEvents, bpm, sampleRate, frameSize);
+            Note[] notes = AudioFunctions.CreateNotes(noteEvents, bpm, sampleRate, hopSize, divisions);
 
             IMusicXmlConfigurator xmlConfigutator = new MusicXmlConfigurator(configuration);
 

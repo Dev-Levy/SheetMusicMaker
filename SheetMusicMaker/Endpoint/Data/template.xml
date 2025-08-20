@@ -29,13 +29,6 @@
                     <beat-type>4</beat-type>
                 </time>
             </attributes>
-            <note>
-                <pitch>
-                    <step>A</step>
-                    <octave>4</octave>
-                </pitch>
-                <duration>8</duration>
-            </note>
         </measure>
     </part>
 </score-partwise>

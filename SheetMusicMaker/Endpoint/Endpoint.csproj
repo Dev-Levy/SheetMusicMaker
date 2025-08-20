@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\boci.wav" />
     <None Remove="Data\piano.wav" />
     <None Remove="Data\test.pdf" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Data\boci.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\piano.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

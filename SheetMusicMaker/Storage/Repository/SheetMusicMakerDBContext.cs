@@ -47,6 +47,14 @@ namespace Repository
                     FilePath = Path.Combine(BASE_DIR, "Data\\piano.wav"),
                     UploadDate = DateTime.MinValue,
                     MediaType = MediaType.Audio
+                },
+                new MediaFile()
+                {
+                    Id = 3,
+                    FileName = "boci.wav",
+                    FilePath = Path.Combine(BASE_DIR, "Data\\boci.wav"),
+                    UploadDate = DateTime.MinValue,
+                    MediaType = MediaType.Audio
                 });
         }
     }

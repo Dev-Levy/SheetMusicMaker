@@ -232,22 +232,36 @@ namespace AnalyzerService
             return noteEvents;
         }
 
-        internal static Note[] CreateNotes(List<NoteHelper> noteEvents, int bpm, int sampleRate, int frameSize)
+        internal static Note[] CreateNotes(List<NoteHelper> noteEvents, int bpm, int sampleRate, int hopSize, int divisions)
         {
-            double Tframe = frameSize / sampleRate;
-            double tempo = 60 / bpm;
+            double Tframe = (double)hopSize / (double)sampleRate;
+            double Tbeat = 60 / (double)bpm;
+
+            Console.WriteLine($"One frame is {Tframe:F2}s and one beat is {Tbeat:F2}s");
+
+            List<Note> notes = [];
+
+            foreach (NoteHelper note in noteEvents)
+            {
+                double Tnote = note.FramesCount * Tframe;
+                double BeatsNote = Tnote / Tbeat;
+
+                Console.WriteLine($"{note.Name} lasted {Tnote:F2}s = {BeatsNote:F2} beats");
+
+                int duration = (int)Math.Round(BeatsNote) * divisions;
+                Console.WriteLine($"Duration in divisions: {duration}");
+                if (duration == 0)
+                    continue;
 
 
+                notes.Add(new Note()
+                {
+                    Pitch = new Pitch(note.Name),
+                    Duration = duration
+                });
+            }
 
-
-            Note[] notes = [
-                new Note{ Pitch = new Pitch{Step = "B", Octave = 4}, Duration = 12},
-                new Note{ Pitch = new Pitch{Step = "A", Octave = 4}, Duration = 2},
-                new Note{ Pitch = new Pitch{Step = "G", Octave = 4}, Duration = 16},
-                new Note{ Pitch = new Pitch{Step = "E", Octave = 4}, Duration = 8},
-            ];
-
-            return notes;
+            return [.. notes];
         }
     }
 }

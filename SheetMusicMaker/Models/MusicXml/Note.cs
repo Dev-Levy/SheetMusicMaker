@@ -13,10 +13,24 @@ namespace Models.MusicXml
     public class Pitch
     {
         [XmlElement("step")]
-        public required string Step { get; set; }
+        public string Step { get; set; }
 
         [XmlElement("octave")]
-        public required int Octave { get; set; }
+        public int Octave { get; set; }
+        public Pitch() { }
+        public Pitch(string name)
+        {
+            if (name.Length == 2)
+            {
+                Step = name[..1].ToString();
+                Octave = int.Parse(name[1..]);
+            }
+            else
+            {
+                Step = name[..2].ToString();
+                Octave = int.Parse(name[2..]);
+            }
+        }
     }
 
 }
