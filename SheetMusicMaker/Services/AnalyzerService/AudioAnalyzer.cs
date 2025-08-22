@@ -12,7 +12,7 @@ namespace AnalyzerService
 {
     public class AudioAnalyzer(IConfiguration configuration) : IAudioAnalyzer
     {
-        public string AnalyzeAndCreateXML(MediaFile audioFile)
+        public string AnalyzeAndCreateXML(MediaFile audioFile, int bpm)
         {
             int frameSize = int.Parse(configuration["FFT:FrameSize"] ?? throw new ArgumentException("FrameSize missing"));
             int hopSize = int.Parse(configuration["FFT:HopSize"] ?? throw new ArgumentException("HopSize missing"));
@@ -34,15 +34,15 @@ namespace AnalyzerService
 
             List<NoteHelper> smoothedNotes = AudioFunctions.ConvertToNotes(fundamentalFreqs);
 
+            Console.Clear();
             foreach (NoteHelper note in smoothedNotes)
                 Console.WriteLine($"{note.Frequency} - ({note.Name})");
 
             List<NoteHelper> noteEvents = AudioFunctions.AggregateNotes(smoothedNotes);
 
+
             foreach (NoteHelper noteEvent in noteEvents)
                 Console.WriteLine($"{noteEvent.Name} - lenght: {noteEvent.FramesCount}");
-
-            int bpm = 120; //TODO
 
             Note[] notes = AudioFunctions.CreateNotes(noteEvents, bpm, sampleRate, hopSize, divisions);
 
@@ -51,7 +51,7 @@ namespace AnalyzerService
             string outputDir = configuration["FileStorage:CreatedDir"] ?? throw new ArgumentException("Config is faulty! CreatedDir not found!");
             Directory.CreateDirectory(outputDir);
 
-            string xmlName = Path.ChangeExtension(audioFile.FileName, ".xml");
+            string xmlName = Path.ChangeExtension(audioFile.FileName, ".musicxml");
             string xmlPath = Path.Combine(outputDir, xmlName);
 
 

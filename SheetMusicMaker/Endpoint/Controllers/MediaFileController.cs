@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using Endpoint.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -61,10 +62,10 @@ namespace Endpoint.Controllers
             return Ok("Audio file uploaded successfully!");
         }
 
-        [HttpGet("analyze/{id}")]
-        public async Task<IActionResult> AnalyzeAudioFile(int id)
+        [HttpPost("analyze")]
+        public async Task<IActionResult> AnalyzeAudioFile([FromBody] AudioInfo audioInfo)
         {
-            int createdPdfId = await logic.AnalyzeAudioFile(id);
+            int createdPdfId = await logic.AnalyzeAudioFile(audioInfo.Id, audioInfo.Bpm, audioInfo.Beats, audioInfo.BeatType);
 
             MediaFile pdfFile = logic.ReadPdfFile(createdPdfId);
 

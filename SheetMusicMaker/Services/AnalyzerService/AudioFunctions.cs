@@ -18,6 +18,7 @@ namespace AnalyzerService
 
     public class AudioFunctions
     {
+        private static readonly int[] ValidDivisions = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48];
         public static float[] HannWindow(int size)
         {
             float[] window = new float[size];
@@ -202,10 +203,9 @@ namespace AnalyzerService
 
         public static List<NoteHelper> AggregateNotes(List<NoteHelper> notes)
         {
-            const string UNSET = "unset";
             List<NoteHelper> noteEvents = [];
 
-            NoteHelper lastNote = new() { Name = UNSET };
+            NoteHelper lastNote = new();
 
             foreach (NoteHelper note in notes)
             {
@@ -215,7 +215,7 @@ namespace AnalyzerService
                 }
                 else
                 {
-                    if (lastNote.Name != UNSET)
+                    if (lastNote.Name != null)
                     {
                         noteEvents.Add((lastNote));
                     }
@@ -224,7 +224,7 @@ namespace AnalyzerService
                 }
             }
 
-            if (lastNote.Name != UNSET)
+            if (lastNote.Name != null)
             {
                 noteEvents.Add((lastNote));
             }
@@ -236,19 +236,22 @@ namespace AnalyzerService
         {
             double Tframe = (double)hopSize / (double)sampleRate;
             double Tbeat = 60 / (double)bpm;
+            double Tdivision = Tbeat / (double)divisions;
 
-            Console.WriteLine($"One frame is {Tframe:F2}s and one beat is {Tbeat:F2}s");
+            Console.WriteLine($"One frame is {Tframe:F2}s and one beat is {Tbeat:F2}s and one division is {Tdivision:F2}s");
+            Console.WriteLine($"One beat is equal to {divisions} division");
 
             List<Note> notes = [];
 
             foreach (NoteHelper note in noteEvents)
             {
                 double Tnote = note.FramesCount * Tframe;
-                double BeatsNote = Tnote / Tbeat;
+                double BeatsPerNote = Tnote / Tbeat;
+                double DivisionsPerNote = Tnote / Tdivision;
 
-                Console.WriteLine($"{note.Name} lasted {Tnote:F2}s = {BeatsNote:F2} beats");
+                Console.WriteLine($"{note.Name} lasted {Tnote:F2}s = {BeatsPerNote:F2} beats = {DivisionsPerNote} divisions");
 
-                int duration = (int)Math.Round(BeatsNote) * divisions;
+                int duration = RoundToNearestValidDivisionNum(DivisionsPerNote);
                 Console.WriteLine($"Duration in divisions: {duration}");
                 if (duration == 0)
                     continue;
@@ -262,6 +265,12 @@ namespace AnalyzerService
             }
 
             return [.. notes];
+        }
+
+        private static int RoundToNearestValidDivisionNum(double divisionsPerNote)
+        {
+            int res = ValidDivisions.MinBy(div => Math.Abs(divisionsPerNote - (double)div));
+            return res;
         }
     }
 }

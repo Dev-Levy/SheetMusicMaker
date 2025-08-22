@@ -1,23 +1,23 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using AnalyzerService;
+﻿using AnalyzerService;
 using Microsoft.Extensions.Configuration;
 using Models;
 using Repository;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
     public class BusinessLogic(IFileRepository mediaFileRepo, IConfiguration configuration) : IBusinessLogic
     {
-        public async Task<int> AnalyzeAudioFile(int id)
+        public async Task<int> AnalyzeAudioFile(int id, int bpm, int beats, int beatType)
         {
             IAudioAnalyzer analyzer = new AudioAnalyzer(configuration);
 
-            MediaFile file = ReadAudioFile(id);
+            MediaFile audioFile = ReadAudioFile(id);
 
-            string xmlPath = analyzer.AnalyzeAndCreateXML(file);
+            string xmlPath = analyzer.AnalyzeAndCreateXML(audioFile, bpm);
             string pdfPath = await analyzer.ConvertXmlToPdfAsync(xmlPath);
 
             MediaFile pdfFile = new()
