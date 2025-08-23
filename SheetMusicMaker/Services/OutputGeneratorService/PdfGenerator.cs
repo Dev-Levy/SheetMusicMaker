@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace OutputGeneratorService
 {
-    public class PdfGenerator(IConfiguration configuration)
+    public class PdfGenerator(IConfiguration configuration) : IPdfGenerator
     {
         public async Task<string> ConvertXmlToPdfAsync(string xmlPath)
         {

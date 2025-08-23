@@ -15,9 +15,9 @@ namespace BusinessLogic
     {
         public async Task<int> AnalyzeAudioFile(AudioInfo audioInfo)
         {
-            AudioAnalyzer analyzer = new(configuration);
-            MusicXmlConfigurator xmlConfigurator = new(configuration);
-            PdfGenerator pdfGenerator = new(configuration);
+            IAudioAnalyzer analyzer = new AudioAnalyzer(configuration);
+            IMusicXmlConfigurator xmlConfigurator = new MusicXmlConfigurator(configuration);
+            IPdfGenerator pdfGenerator = new PdfGenerator(configuration);
 
             MediaFile audioFile = ReadAudioFile(audioInfo.Id);
 
