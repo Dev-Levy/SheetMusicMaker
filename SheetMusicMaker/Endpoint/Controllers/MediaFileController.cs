@@ -1,5 +1,4 @@
 ﻿using BusinessLogic;
-using Endpoint.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -65,7 +64,7 @@ namespace Endpoint.Controllers
         [HttpPost("analyze")]
         public async Task<IActionResult> AnalyzeAudioFile([FromBody] AudioInfo audioInfo)
         {
-            int createdPdfId = await logic.AnalyzeAudioFile(audioInfo.Id, audioInfo.Bpm, audioInfo.Beats, audioInfo.BeatType);
+            int createdPdfId = await logic.AnalyzeAudioFile(audioInfo);
 
             MediaFile pdfFile = logic.ReadPdfFile(createdPdfId);
 

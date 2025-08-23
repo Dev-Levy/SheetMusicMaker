@@ -1,6 +1,8 @@
 ﻿using AnalyzerService;
 using Microsoft.Extensions.Configuration;
 using Models;
+using Models.MusicXml;
+using OutputGeneratorService;
 using Repository;
 using System;
 using System.IO;
@@ -11,14 +13,17 @@ namespace BusinessLogic
 {
     public class BusinessLogic(IFileRepository mediaFileRepo, IConfiguration configuration) : IBusinessLogic
     {
-        public async Task<int> AnalyzeAudioFile(int id, int bpm, int beats, int beatType)
+        public async Task<int> AnalyzeAudioFile(AudioInfo audioInfo)
         {
-            IAudioAnalyzer analyzer = new AudioAnalyzer(configuration);
+            AudioAnalyzer analyzer = new(configuration);
+            MusicXmlConfigurator xmlConfigurator = new(configuration);
+            PdfGenerator pdfGenerator = new(configuration);
 
-            MediaFile audioFile = ReadAudioFile(id);
+            MediaFile audioFile = ReadAudioFile(audioInfo.Id);
 
-            string xmlPath = analyzer.AnalyzeAndCreateXML(audioFile, bpm);
-            string pdfPath = await analyzer.ConvertXmlToPdfAsync(xmlPath);
+            Note[] notes = analyzer.AnalyzeNotes(audioFile, audioInfo);
+            string xmlPath = xmlConfigurator.CreateXml(audioFile, audioInfo, notes);
+            string pdfPath = await pdfGenerator.ConvertXmlToPdfAsync(xmlPath);
 
             MediaFile pdfFile = new()
             {

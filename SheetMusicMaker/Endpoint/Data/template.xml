@@ -16,19 +16,6 @@
             <part-name>Music</part-name>
         </score-part>
     </part-list>
-    <part id="P1">
-        <measure number="1">
-            <attributes>
-                <divisions>8</divisions>
-                <key>
-                    <fifths>0</fifths>
-                    <mode>major</mode>
-                </key>
-                <time>
-                    <beats>4</beats>
-                    <beat-type>4</beat-type>
-                </time>
-            </attributes>
-        </measure>
+    <part id="P1">        
     </part>
 </score-partwise>

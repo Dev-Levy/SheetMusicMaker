@@ -18,7 +18,8 @@ namespace AnalyzerService
 
     public class AudioFunctions
     {
-        private static readonly int[] ValidDivisions = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48];
+        private static readonly int[] ValidDivisions = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128];
+
         public static float[] HannWindow(int size)
         {
             float[] window = new float[size];
@@ -251,7 +252,7 @@ namespace AnalyzerService
 
                 Console.WriteLine($"{note.Name} lasted {Tnote:F2}s = {BeatsPerNote:F2} beats = {DivisionsPerNote} divisions");
 
-                int duration = RoundToNearestValidDivisionNum(DivisionsPerNote);
+                int duration = ValidDivisions.MinBy(div => Math.Abs(DivisionsPerNote - (double)div));
                 Console.WriteLine($"Duration in divisions: {duration}");
                 if (duration == 0)
                     continue;
@@ -265,12 +266,6 @@ namespace AnalyzerService
             }
 
             return [.. notes];
-        }
-
-        private static int RoundToNearestValidDivisionNum(double divisionsPerNote)
-        {
-            int res = ValidDivisions.MinBy(div => Math.Abs(divisionsPerNote - (double)div));
-            return res;
         }
     }
 }

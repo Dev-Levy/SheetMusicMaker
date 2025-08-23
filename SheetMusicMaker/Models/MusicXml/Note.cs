@@ -9,6 +9,7 @@ namespace Models.MusicXml
 
         [XmlElement("duration")]
         public required int Duration { get; set; }
+
     }
     public class Pitch
     {
@@ -17,6 +18,9 @@ namespace Models.MusicXml
 
         [XmlElement("octave")]
         public int Octave { get; set; }
+
+        [XmlElement("alter")]
+        public int Alter { get; set; }
         public Pitch() { }
         public Pitch(string name)
         {
@@ -27,7 +31,8 @@ namespace Models.MusicXml
             }
             else
             {
-                Step = name[..2].ToString();
+                Step = name[..1].ToString();
+                Alter = name[1].Equals('#') ? 1 : -1;
                 Octave = int.Parse(name[2..]);
             }
         }

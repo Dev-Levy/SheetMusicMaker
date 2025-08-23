@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Models\Models.csproj" />
     <ProjectReference Include="..\..\Storage\Repository\Repository.csproj" />
     <ProjectReference Include="..\AnalyzerService\AnalyzerService.csproj" />
+    <ProjectReference Include="..\OutputGeneratorService\OutputGeneratorService.csproj" />
   </ItemGroup>
 
 </Project>

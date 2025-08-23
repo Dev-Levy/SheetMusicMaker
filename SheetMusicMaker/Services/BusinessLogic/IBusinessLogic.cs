@@ -12,6 +12,6 @@ namespace BusinessLogic
         void DeleteAudioFile(int id);
         Task UploadFile(MediaFile file, Stream stream);
         MediaFile ReadPdfFile(int id);
-        Task<int> AnalyzeAudioFile(int id, int bpm, int beats, int beatType);
+        Task<int> AnalyzeAudioFile(AudioInfo audioInfo);
     }
 }
