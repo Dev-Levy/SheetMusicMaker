@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace OutputGeneratorService
 {
-    public class MusicXmlConfigurator(IConfiguration configuration)
+    public class MusicXmlConfigurator(IConfiguration configuration) : IMusicXmlConfigurator
     {
         private readonly XDocument doc = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "Data\\template.xml"));
         private readonly int divisions = int.Parse(configuration["XmlConstants:Divisions"] ?? throw new ArgumentException("Config is faulty! Divisions not found!"));
@@ -162,14 +162,26 @@ namespace OutputGeneratorService
 
         private static XElement ConvertNoteToXml(Note note)
         {
-            XElement xNote = new("note",
-                new XElement("pitch",
-                    new XElement("step", note.Pitch.Step),
-                    new XElement("alter", note.Pitch.Alter),
-                    new XElement("octave", note.Pitch.Octave)
-                ),
-                new XElement("duration", note.Duration)
-            );
+            XElement xNote;
+            if (note.Pitch.Step == "R") //rest
+            {
+                xNote = new("note",
+                    new XElement("rest"),
+                    new XElement("duration", note.Duration)
+                );
+            }
+            else
+            {
+                xNote = new("note",
+                    new XElement("pitch",
+                        new XElement("step", note.Pitch.Step),
+                        new XElement("alter", note.Pitch.Alter),
+                        new XElement("octave", note.Pitch.Octave)
+                    ),
+                    new XElement("duration", note.Duration)
+                );
+            }
+
             return xNote;
         }
 

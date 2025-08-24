@@ -15,9 +15,9 @@ namespace BusinessLogic
     {
         public async Task<int> AnalyzeAudioFile(AudioInfo audioInfo)
         {
-            AudioAnalyzer analyzer = new(configuration);
-            MusicXmlConfigurator xmlConfigurator = new(configuration);
-            PdfGenerator pdfGenerator = new(configuration);
+            IAudioAnalyzer analyzer = new AudioAnalyzer(configuration);
+            IMusicXmlConfigurator xmlConfigurator = new MusicXmlConfigurator(configuration);
+            IPdfGenerator pdfGenerator = new PdfGenerator(configuration);
 
             MediaFile audioFile = ReadAudioFile(audioInfo.Id);
 
@@ -59,6 +59,11 @@ namespace BusinessLogic
 
         public async Task UploadFile(MediaFile file, Stream stream)
         {
+            IQueryable<MediaFile> files = ReadAllAudioFiles();
+            if (files.Any(audioFile => audioFile.FileName == file.FileName))
+            {
+                throw new InvalidOperationException($"File with name {file.FileName} already uploaded!");
+            }
             await mediaFileRepo.CreateFile(file, stream);
         }
         #endregion
