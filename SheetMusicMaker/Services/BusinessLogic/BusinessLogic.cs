@@ -59,6 +59,11 @@ namespace BusinessLogic
 
         public async Task UploadFile(MediaFile file, Stream stream)
         {
+            IQueryable<MediaFile> files = ReadAllAudioFiles();
+            if (files.Any(audioFile => audioFile.FileName == file.FileName))
+            {
+                throw new InvalidOperationException($"File with name {file.FileName} already uploaded!");
+            }
             await mediaFileRepo.CreateFile(file, stream);
         }
         #endregion
