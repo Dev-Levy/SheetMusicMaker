@@ -40,7 +40,7 @@ namespace AnalyzerService
 
             //framing
             float[][] frames = FrameSamples(samples, frameSize, hopSize);
-            Complex[][] ffFrames = ComputeFftOnFrames(frames, sampleRate);
+            Complex[][] ffFrames = ComputeFftOnFrames(frames, frameSize);
 
             //calculate frequency, RMS, spectral flux
             float[] frequencies = ComputeFundamentalFreqsOnFrames(ffFrames, sampleRate);
@@ -49,6 +49,7 @@ namespace AnalyzerService
 
             List<NoteHelper> detectedNotes = DetectNotes(frequencies, rms, flux);
 
+            Console.Clear();
             foreach (NoteHelper note in detectedNotes)
                 Console.WriteLine($"{note.Name} - lenght: {note.FramesCount}");
 
@@ -57,7 +58,8 @@ namespace AnalyzerService
             return notes;
         }
 
-        public static float[] HannWindow(int size)
+        #region Helper Methods
+        public float[] HannWindow(int size)
         {
             float[] window = new float[size];
             for (int i = 0; i < size; i++)
@@ -65,13 +67,13 @@ namespace AnalyzerService
             return window;
         }
 
-        public static void ApplyWindow(float[] frame, float[] window)
+        public void ApplyWindow(float[] frame, float[] window)
         {
             for (int i = 0; i < frame.Length; i++)
                 frame[i] *= window[i];
         }
 
-        public static float[] ReadAudioSamples(string filePath, out int sampleRate, out int channels)
+        public float[] ReadAudioSamples(string filePath, out int sampleRate, out int channels)
         {
             using var reader = new AudioFileReader(filePath);
             int sampleCount = (int)reader.Length / (reader.WaveFormat.BitsPerSample / 8);
@@ -84,7 +86,7 @@ namespace AnalyzerService
             return samples;
         }
 
-        public static float[] ConvertToMono(float[] samples, int channels)
+        public float[] ConvertToMono(float[] samples, int channels)
         {
             if (channels == 1) return samples;
 
@@ -104,7 +106,7 @@ namespace AnalyzerService
             return mono;
         }
 
-        public static float[] BandPassFilter(float[] samples, int sampleRate, float lowCut = 50f, float highCut = 5000f)
+        public float[] BandPassFilter(float[] samples, int sampleRate, float lowCut = 50f, float highCut = 5000f)
         {
             var filtered = new float[samples.Length];
 
@@ -120,7 +122,7 @@ namespace AnalyzerService
             return filtered;
         }
 
-        public static float[][] FrameSamples(float[] samples, int frameSize, int hopSize)
+        public float[][] FrameSamples(float[] samples, int frameSize, int hopSize)
         {
             int frameCount = (samples.Length - frameSize) / hopSize + 1;
             float[][] frames = new float[frameCount][];
@@ -134,7 +136,7 @@ namespace AnalyzerService
             return frames;
         }
 
-        public static float[] ComputeRmsOnFrames(float[][] frames)
+        public float[] ComputeRmsOnFrames(float[][] frames)
         {
             float[] rmsValues = [.. frames.Select(frame =>
             {
@@ -148,7 +150,7 @@ namespace AnalyzerService
             return rmsValues;
         }
 
-        public static Complex[][] ComputeFftOnFrames(float[][] frames, int frameSize)
+        public Complex[][] ComputeFftOnFrames(float[][] frames, int frameSize)
         {
             float[] hannWindow = HannWindow(frameSize);
 
@@ -161,8 +163,10 @@ namespace AnalyzerService
             return fftValues;
         }
 
-        public static float[] ComputeSpectralFluxOnFrames(Complex[][] fftFrames)
+        public float[] ComputeSpectralFluxOnFrames(Complex[][] fftFrames)
         {
+            int fixThreshold = int.Parse(configuration["Analysis:FluxThreshold"] ?? throw new ArgumentException("Flux threshold missing"));
+
             List<float> fluxValues = [0];
 
             for (int i = 1; i < fftFrames.Length; i++)
@@ -178,10 +182,31 @@ namespace AnalyzerService
                 fluxValues.Add((float)flux);
             }
 
-            return [.. fluxValues];
+            int window = 10;
+            float[] enhancedFluxValues = new float[fluxValues.Count];
+
+            for (int i = 0; i < fluxValues.Count; i++)
+            {
+                int start = Math.Max(0, i - window);
+                int end = Math.Min(fluxValues.Count - 1, i + window);
+
+                float sum = fluxValues[start..(end + 1)].Sum();
+                int count = end - start + 1;
+
+                float localMean = sum / count;
+                enhancedFluxValues[i] = Math.Max(0, fluxValues[i] - localMean);
+            }
+
+            float[] filteredFluxValues = new float[fluxValues.Count];
+            for (int i = 0; i < enhancedFluxValues.Length; i++)
+            {
+                filteredFluxValues[i] = enhancedFluxValues[i] < fixThreshold ? 0 : enhancedFluxValues[i];
+            }
+
+            return filteredFluxValues;
         }
 
-        public static float[] ComputeFundamentalFreqsOnFrames(Complex[][] fftFrames, int sampleRate)
+        public float[] ComputeFundamentalFreqsOnFrames(Complex[][] fftFrames, int sampleRate)
         {
             float[] freqs = [.. fftFrames.Select(frame =>
             {
@@ -192,7 +217,7 @@ namespace AnalyzerService
             return freqs;
         }
 
-        public static Complex[] FFT(float[] frame)
+        public Complex[] FFT(float[] frame)
         {
             Complex[] fft = new Complex[frame.Length];
             for (int i = 0; i < frame.Length; i++)
@@ -202,7 +227,7 @@ namespace AnalyzerService
             return fft;
         }
 
-        public static float GetFundamentalFrequencyHPS(float[] magnitudes, int sampleRate, int maxHarmonics = 5)
+        public float GetFundamentalFrequencyHPS(float[] magnitudes, int sampleRate, int maxHarmonics = 5)
         {
             int N = magnitudes.Length;
             int halfN = N / 2;
@@ -239,50 +264,40 @@ namespace AnalyzerService
 
         public List<NoteHelper> DetectNotes(float[] fundamentalFreqs, float[] rms, float[] flux)
         {
-            float fluxThreshold = float.Parse(configuration["Analysis:FluxThreshold"]
-                               ?? throw new ArgumentException("Flux threshold missing"), CultureInfo.InvariantCulture);
-            float rmsThreshold = float.Parse(configuration["Analysis:RmsThreshold"]
-                               ?? throw new ArgumentException("Rms threshold missing"), CultureInfo.InvariantCulture);
-            int windowSize = int.Parse(configuration["Analysis:SmoothingWindowSize"]
-                               ?? throw new ArgumentException("SmoothingWindowSize missing"));
+            int windowSize = int.Parse(configuration["Analysis:SmoothingWindowSize"] ?? throw new ArgumentException("SmoothingWindowSize missing"));
 
-            List<NoteHelper> notes = [.. fundamentalFreqs.Select(freq => new NoteHelper { Frequency = freq, Name = FrequencyToNoteName(freq), FramesCount = 1 })];
-
-            Console.Clear();
-            foreach (var note in notes)
-            {
-                Console.WriteLine($"{note.Frequency} - ({note.Name})");
-            }
-
+            List<NoteHelper> notes = SetupNotes(fundamentalFreqs, rms);
             notes = SmoothenNoteGlitches(notes, windowSize);
 
-            for (int i = 0; i < notes.Count; i++)
-            {
-                NoteHelper note = notes[i];
-                Console.SetCursorPosition(20, i);
-                Console.WriteLine($"{note.Frequency} - ({note.Name})");
-            }
+            List<int> pitchChanges = PitchChangePicking(notes);
+            List<int> onsets = PeakPicking(flux);
+
+            int tolerance = 3;
+            List<int> merged = pitchChanges.SelectMany(pc => onsets
+                                        .Where(o => Math.Abs(o - pc) <= tolerance)
+                                        .DefaultIfEmpty(pc))
+                                     .Union(onsets).Distinct()
+                                     .OrderBy(x => x)
+                                     .ToList();
 
             List<NoteHelper> noteEvents = [];
-            NoteHelper lastNote = new();
+            NoteHelper lastNote = notes[0];
 
-            for (int i = 0; i < notes.Count; i++)
+            for (int i = 1; i < notes.Count; i++)
             {
-                //bool pitchChanged = lastNote.Name is not null && notes[i].Name != lastNote.Name;
-                bool onsetDetected = lastNote.Name is not null && ((flux[i] > fluxThreshold) || (rms[i] - rms[i - 1] > rmsThreshold));
+                //rms not used
 
-                onsetDetected = false;
+                //bool newNoteStarts = pitchChanges.Contains(i) || onsets.Contains(i);
+                bool newNoteStarts = pitchChanges.Contains(i);
+                //bool newNoteStarts = merged.Contains(i);
 
-                if (notes[i].Name == lastNote.Name && !onsetDetected)
+                if (!newNoteStarts)
                 {
                     lastNote.FramesCount++;
                 }
                 else
                 {
-                    if (lastNote.Name is not null)
-                    {
-                        noteEvents.Add((lastNote));
-                    }
+                    noteEvents.Add((lastNote));
 
                     lastNote = notes[i];
                 }
@@ -296,7 +311,37 @@ namespace AnalyzerService
             return noteEvents;
         }
 
-        public static List<NoteHelper> SmoothenNoteGlitches(List<NoteHelper> notes, int windowSize)
+        public List<NoteHelper> SetupNotes(float[] fundamentalFreqs, float[] rms)
+        {
+            float rmsThreshold = float.Parse(configuration["Analysis:RmsThreshold"] ?? throw new ArgumentException("Rms threshold missing"), CultureInfo.InvariantCulture);
+            List<NoteHelper> notes = [];
+
+            for (int i = 0; i < fundamentalFreqs.Length; i++)
+            {
+                if (rms[i] > rmsThreshold)
+                {
+                    notes.Add(new NoteHelper
+                    {
+                        Frequency = fundamentalFreqs[i],
+                        Name = FrequencyToNoteName(fundamentalFreqs[i]),
+                        FramesCount = 1
+                    });
+                }
+                else
+                {
+                    notes.Add(new NoteHelper
+                    {
+                        Frequency = 0,
+                        Name = "Rest",
+                        FramesCount = 1
+                    });
+                }
+            }
+
+            return notes;
+        }
+
+        public List<NoteHelper> SmoothenNoteGlitches(List<NoteHelper> notes, int windowSize)
         {
             List<NoteHelper> smoothenedNotes = [];
 
@@ -315,7 +360,45 @@ namespace AnalyzerService
             return smoothenedNotes;
         }
 
-        public static string FrequencyToNoteName(float freq)
+        private List<int> PitchChangePicking(List<NoteHelper> notes)
+        {
+            List<int> changes = [];
+            for (int i = 1; i < notes.Count; i++)
+            {
+                if (notes[i].Name != notes[i - 1].Name)
+                {
+                    changes.Add(i);
+                }
+            }
+            return changes;
+        }
+
+        public List<int> PeakPicking(float[] flux)
+        {
+            int windowSize = int.Parse(configuration["Analysis:PeakPickingWindowSize"] ?? throw new ArgumentException("PeakPickingWindowSize missing"));
+            int fixThreshold = int.Parse(configuration["Analysis:FluxThreshold"] ?? throw new ArgumentException("Flux threshold missing"));
+            float thresholdOffset = float.Parse(configuration["Analysis:FluxThresholdOffset"] ?? throw new ArgumentException("Flux threshold offset missing"), CultureInfo.InvariantCulture);
+            List<int> peaks = [];
+
+            for (int n = 1; n < flux.Length - 1; n++)
+            {
+                // Compute adaptive threshold
+                int start = Math.Max(0, n - windowSize);
+                int end = Math.Min(flux.Length, n + windowSize);
+                float localMean = flux.Skip(start).Take(end - start).Average();
+                float adaptiveThreshold = localMean * thresholdOffset;
+
+                // Peak condition
+                if (flux[n] > flux[n - 1] && flux[n] > flux[n + 1] && flux[n] > adaptiveThreshold && flux[n] > fixThreshold)
+                {
+                    peaks.Add(n);
+                }
+            }
+
+            return peaks;
+        }
+
+        public string FrequencyToNoteName(float freq)
         {
             int midi = (int)Math.Round(69 + 12 * Math.Log(freq / 440.0, 2));
             string[] noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -326,7 +409,7 @@ namespace AnalyzerService
             return $"{noteNames[noteIndex]}{octave}";
         }
 
-        public static Note[] CreateNotes(List<NoteHelper> detectedNotes, int bpm, int sampleRate, int hopSize, int divisions)
+        public Note[] CreateNotes(List<NoteHelper> detectedNotes, int bpm, int sampleRate, int hopSize, int divisions)
         {
             double Tframe = (double)hopSize / (double)sampleRate;
             double Tbeat = 60 / (double)bpm;
@@ -350,15 +433,31 @@ namespace AnalyzerService
                 if (duration == 0)
                     continue;
 
+                Note created;
 
-                notes.Add(new Note()
+                if (note.Name == "Rest")
                 {
-                    Pitch = new Pitch(note.Name),
-                    Duration = duration
-                });
+                    created = new Note()
+                    {
+                        Pitch = new Pitch("R0"),
+                        Duration = duration,
+                    };
+                }
+                else
+                {
+                    created = new Note()
+                    {
+                        Pitch = new Pitch(note.Name),
+                        Duration = duration
+                    };
+                }
+
+                notes.Add(created);
             }
 
             return [.. notes];
         }
+
+        #endregion
     }
 }
