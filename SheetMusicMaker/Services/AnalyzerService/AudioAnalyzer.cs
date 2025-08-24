@@ -40,16 +40,15 @@ namespace AnalyzerService
 
             //framing
             float[][] frames = FrameSamples(samples, frameSize, hopSize);
-            Complex[][] ffFrames = ComputeFftOnFrames(frames, frameSize);
+            Complex[][] fftFrames = ComputeFftOnFrames(frames, frameSize);
 
             //calculate frequency, RMS, spectral flux
-            float[] frequencies = ComputeFundamentalFreqsOnFrames(ffFrames, sampleRate);
+            float[] frequencies = ComputeFundamentalFreqsOnFrames(fftFrames, sampleRate);
             float[] rms = ComputeRmsOnFrames(frames);
-            float[] flux = ComputeSpectralFluxOnFrames(ffFrames);
+            float[] flux = ComputeSpectralFluxOnFrames(fftFrames);
 
             List<NoteHelper> detectedNotes = DetectNotes(frequencies, rms, flux);
 
-            Console.Clear();
             foreach (NoteHelper note in detectedNotes)
                 Console.WriteLine($"{note.Name} - lenght: {note.FramesCount}");
 
@@ -266,30 +265,45 @@ namespace AnalyzerService
         {
             int windowSize = int.Parse(configuration["Analysis:SmoothingWindowSize"] ?? throw new ArgumentException("SmoothingWindowSize missing"));
 
+            for (int i = 0; i < fundamentalFreqs.Length; i++)
+                Console.WriteLine($"{fundamentalFreqs[i]:F2} - rms: {rms[i]:F6} - flux: {flux[i]:F2}");
+
             List<NoteHelper> notes = SetupNotes(fundamentalFreqs, rms);
             notes = SmoothenNoteGlitches(notes, windowSize);
+
+            for (int i = 0; i < fundamentalFreqs.Length; i++)
+                Console.WriteLine($"{notes[i].Frequency:F2}({notes[i].Name}) - rms: {rms[i]:F6} - flux: {flux[i]:F2}");
 
             List<int> pitchChanges = PitchChangePicking(notes);
             List<int> onsets = PeakPicking(flux);
 
             int tolerance = 3;
-            List<int> merged = pitchChanges.SelectMany(pc => onsets
-                                        .Where(o => Math.Abs(o - pc) <= tolerance)
-                                        .DefaultIfEmpty(pc))
-                                     .Union(onsets).Distinct()
-                                     .OrderBy(x => x)
-                                     .ToList();
 
             List<NoteHelper> noteEvents = [];
-            NoteHelper lastNote = notes[0];
+            NoteHelper lastNote = new();
 
-            for (int i = 1; i < notes.Count; i++)
+            for (int i = 0; i < notes.Count; i++)
             {
-                //rms not used
+                if (lastNote.Name is null)
+                {
+                    lastNote = notes[i];
+                    continue;
+                }
 
-                //bool newNoteStarts = pitchChanges.Contains(i) || onsets.Contains(i);
-                bool newNoteStarts = pitchChanges.Contains(i);
-                //bool newNoteStarts = merged.Contains(i);
+                bool newNoteStarts = false;
+
+                if (pitchChanges.Contains(i))
+                {
+                    newNoteStarts = true;
+                }
+                else
+                {
+                    bool onsetHere = onsets.Contains(i);
+                    bool nearPitchChange = pitchChanges.Any(pc => Math.Abs(pc - i) <= tolerance);
+
+                    if (onsetHere && !nearPitchChange)
+                        newNoteStarts = true;
+                }
 
                 if (!newNoteStarts)
                 {
@@ -363,14 +377,18 @@ namespace AnalyzerService
         private List<int> PitchChangePicking(List<NoteHelper> notes)
         {
             List<int> changes = [];
+            NoteHelper lastNote = new();
+
             for (int i = 1; i < notes.Count; i++)
             {
-                if (notes[i].Name != notes[i - 1].Name)
+                var note = notes[i];
+                if (note.Name != lastNote.Name)
                 {
                     changes.Add(i);
                 }
+                lastNote = note;
             }
-            return changes;
+            return changes[1..];
         }
 
         public List<int> PeakPicking(float[] flux)
@@ -395,7 +413,7 @@ namespace AnalyzerService
                 }
             }
 
-            return peaks;
+            return peaks[1..];
         }
 
         public string FrequencyToNoteName(float freq)
