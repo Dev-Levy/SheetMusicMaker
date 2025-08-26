@@ -14,6 +14,8 @@ namespace Endpoint.Controllers
     public class MediaFileController(IBusinessLogic logic) : ControllerBase
     {
         const string audio = "audio";
+        const string analyze = "analyze";
+        const string xml = "xml";
 
         [HttpGet(audio)]
         public IActionResult GetAllAudioFiles()
@@ -48,20 +50,19 @@ namespace Endpoint.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            MediaFile mediaFile = new()
+            AudioFile audioFile = new()
             {
                 FileName = file.FileName,
                 UploadDate = DateTime.Now,
-                MediaType = MediaType.Audio
             };
 
             await using Stream stream = file.OpenReadStream();
-            await logic.UploadFile(mediaFile, stream);
+            await logic.UploadFile(audioFile, stream);
 
             return Ok("Audio file uploaded successfully!");
         }
 
-        [HttpPost("analyze")]
+        [HttpPost(analyze)]
         public async Task<IActionResult> AnalyzeAudioFile([FromBody] AudioInfo audioInfo)
         {
             int createdPdfId = await logic.AnalyzeAudioFile(audioInfo);
@@ -72,6 +73,17 @@ namespace Endpoint.Controllers
             string mimeType = GetMimeType(pdfFile.FileName);
 
             return File(fileBytes, mimeType, pdfFile.FileName);
+        }
+
+        [HttpGet(xml + "/{id}")]
+        public IActionResult GetXmlFile(int id)
+        {
+            XmlFile xmlFile = logic.ReadXmlFile(id);
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(xmlFile.FilePath);
+            string mimeType = GetMimeType(xmlFile.FileName);
+
+            return File(fileBytes, mimeType, xmlFile.FileName);
         }
 
         private static string GetMimeType(string fileName)

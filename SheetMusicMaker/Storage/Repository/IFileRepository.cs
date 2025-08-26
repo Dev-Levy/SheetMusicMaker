@@ -7,15 +7,17 @@ namespace Repository
 {
     public interface IFileRepository
     {
-        Task CreateFile(MediaFile file, Stream data);
-        Task StoreFile(MediaFile file);
-
+        Task CreateAudioFile(AudioFile file, Stream data);
+        Task CreatePdfFile(PdfFile file, Stream data);
         void DeleteAudioFile(int id);
         void DeletePdfFile(int id);
-        IQueryable<MediaFile> ReadAllAudioFile();
-        IQueryable<MediaFile> ReadAllPdfs();
-        MediaFile ReadAudioFile(int id);
-        MediaFile ReadPdfFile(int id);
-        void UpdateFile(MediaFile item);
+        IQueryable<AudioFile> ReadAllAudioFile();
+        IQueryable<PdfFile> ReadAllPdfs();
+        AudioFile ReadAudioFile(int id);
+        PdfFile ReadPdfFile(int id);
+        XmlFile ReadXmlFile(int createdForId);
+        Task StoreAudioFile(AudioFile file);
+        Task StorePdfFile(PdfFile file);
+        Task StoreXmlFile(XmlFile file);
     }
 }

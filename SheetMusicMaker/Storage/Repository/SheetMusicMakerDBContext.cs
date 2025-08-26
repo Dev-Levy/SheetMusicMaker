@@ -2,17 +2,15 @@
 using Models;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Repository
 {
     public class SheetMusicMakerDBContext : DbContext
     {
         private readonly string BASE_DIR = AppContext.BaseDirectory;
-        public IQueryable<MediaFile> AudioFiles => MediaFiles.Where(f => f.MediaType == MediaType.Audio);
-        public IQueryable<MediaFile> PdfFiles => MediaFiles.Where(f => f.MediaType == MediaType.Pdf);
-
-        public DbSet<MediaFile> MediaFiles { get; set; }
+        public DbSet<AudioFile> AudioFiles { get; set; }
+        public DbSet<PdfFile> PdfFiles { get; set; }
+        public DbSet<XmlFile> XmlFiles { get; set; }
 
         public SheetMusicMakerDBContext()
         {
@@ -31,31 +29,31 @@ namespace Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MediaFile>().HasData(
-                new MediaFile()
-                {
-                    Id = 1,
-                    FileName = "Test.pdf",
-                    FilePath = Path.Combine(BASE_DIR, "Data\\Test.pdf"),
-                    UploadDate = DateTime.MinValue,
-                    MediaType = MediaType.Pdf
-                },
-                new MediaFile()
+            modelBuilder.Entity<AudioFile>().HasData(
+                new AudioFile()
                 {
                     Id = 2,
                     FileName = "piano.wav",
                     FilePath = Path.Combine(BASE_DIR, "Data\\piano.wav"),
                     UploadDate = DateTime.MinValue,
-                    MediaType = MediaType.Audio
                 },
-                new MediaFile()
+                new AudioFile()
                 {
                     Id = 3,
                     FileName = "boci.wav",
                     FilePath = Path.Combine(BASE_DIR, "Data\\boci.wav"),
                     UploadDate = DateTime.MinValue,
-                    MediaType = MediaType.Audio
                 });
+
+            modelBuilder.Entity<PdfFile>().HasData(
+                 new PdfFile()
+                 {
+                     Id = 1,
+                     FileName = "Test.pdf",
+                     FilePath = Path.Combine(BASE_DIR, "Data\\Test.pdf"),
+                     UploadDate = DateTime.MinValue,
+                     CreatedForId = 2
+                 });
         }
     }
 }

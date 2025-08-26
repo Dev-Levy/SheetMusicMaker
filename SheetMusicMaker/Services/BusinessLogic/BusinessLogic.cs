@@ -25,29 +25,44 @@ namespace BusinessLogic
             string xmlPath = xmlConfigurator.CreateXml(audioFile, audioInfo, notes);
             string pdfPath = await pdfGenerator.ConvertXmlToPdfAsync(xmlPath);
 
-            MediaFile pdfFile = new()
+            XmlFile xmlFile = new()
+            {
+                FileName = Path.GetFileName(xmlPath),
+                UploadDate = DateTime.Now,
+                FilePath = xmlPath,
+                CreatedForId = audioFile.Id
+            };
+            PdfFile pdfFile = new()
             {
                 FileName = Path.GetFileName(pdfPath),
                 UploadDate = DateTime.Now,
                 FilePath = pdfPath,
-                MediaType = MediaType.Pdf
+                CreatedForId = audioFile.Id
             };
-            await mediaFileRepo.StoreFile(pdfFile);
+
+            await mediaFileRepo.StoreXmlFile(xmlFile);
+            await mediaFileRepo.StorePdfFile(pdfFile);
 
             return pdfFile.Id;
         }
+
         #region CRUD
-        public IQueryable<MediaFile> ReadAllAudioFiles()
+        public IQueryable<AudioFile> ReadAllAudioFiles()
         {
             return mediaFileRepo.ReadAllAudioFile();
         }
 
-        public MediaFile ReadAudioFile(int id)
+        public AudioFile ReadAudioFile(int id)
         {
             return mediaFileRepo.ReadAudioFile(id);
         }
 
-        public MediaFile ReadPdfFile(int id)
+        public XmlFile ReadXmlFile(int id)
+        {
+            return mediaFileRepo.ReadXmlFile(id);
+        }
+
+        public PdfFile ReadPdfFile(int id)
         {
             return mediaFileRepo.ReadPdfFile(id);
         }
@@ -57,14 +72,14 @@ namespace BusinessLogic
             mediaFileRepo.DeleteAudioFile(id);
         }
 
-        public async Task UploadFile(MediaFile file, Stream stream)
+        public async Task UploadFile(AudioFile file, Stream stream)
         {
             IQueryable<MediaFile> files = ReadAllAudioFiles();
             if (files.Any(audioFile => audioFile.FileName == file.FileName))
             {
                 throw new InvalidOperationException($"File with name {file.FileName} already uploaded!");
             }
-            await mediaFileRepo.CreateFile(file, stream);
+            await mediaFileRepo.CreateAudioFile(file, stream);
         }
         #endregion
     }

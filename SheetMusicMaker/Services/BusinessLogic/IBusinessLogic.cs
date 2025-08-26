@@ -7,11 +7,12 @@ namespace BusinessLogic
 {
     public interface IBusinessLogic
     {
-        IQueryable<MediaFile> ReadAllAudioFiles();
-        MediaFile ReadAudioFile(int id);
-        void DeleteAudioFile(int id);
-        Task UploadFile(MediaFile file, Stream stream);
-        MediaFile ReadPdfFile(int id);
         Task<int> AnalyzeAudioFile(AudioInfo audioInfo);
+        void DeleteAudioFile(int id);
+        IQueryable<AudioFile> ReadAllAudioFiles();
+        AudioFile ReadAudioFile(int id);
+        PdfFile ReadPdfFile(int id);
+        XmlFile ReadXmlFile(int id);
+        Task UploadFile(AudioFile file, Stream stream);
     }
 }
