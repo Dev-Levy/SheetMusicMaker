@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
-    public enum MediaType { Pdf, Audio }
-    public class MediaFile
+    public abstract class MediaFile
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -13,6 +12,17 @@ namespace Models
         public required string FileName { get; set; }
         public string FilePath { get; set; }
         public required DateTime UploadDate { get; set; }
-        public required MediaType MediaType { get; set; }
+    }
+    public sealed class AudioFile : MediaFile
+    {
+    }
+
+    public sealed class PdfFile : MediaFile
+    {
+        public int CreatedForId { get; set; }
+    }
+    public sealed class XmlFile : MediaFile
+    {
+        public int CreatedForId { get; set; }
     }
 }
