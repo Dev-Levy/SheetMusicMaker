@@ -24,8 +24,8 @@ namespace OutputGeneratorService
 
             SetTitle(audioInfo.Title);
             SetComposer(audioInfo.Composer);
-            SetTempo(audioInfo.Bpm);
             SetTimeSignature(audioInfo.Beats, audioInfo.BeatType);
+            SetTempo(audioInfo.Bpm);
 
             AddNotes(notes);
 
